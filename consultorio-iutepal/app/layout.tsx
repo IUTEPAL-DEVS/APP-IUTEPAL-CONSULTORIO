@@ -1,12 +1,7 @@
 import "./globals.css"
-import { Inter as FontSans } from "next/font/google"
 
 import { cn } from "@/lib/utils"
-
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
+import { lato, merriweather, notoSans, openSans } from "@/lib/fonts"
 
 interface RootLayoutProps {
   children: React.ReactNode
@@ -19,7 +14,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
+          notoSans.className
         )}
       >
         {children}
