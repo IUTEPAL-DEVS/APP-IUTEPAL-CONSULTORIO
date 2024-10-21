@@ -1,7 +1,9 @@
-export default function Page() {
-    return (
-    <section>
+import { DataTablePatiens } from "./data-table"
 
-    </section>
+export default async function Page() {
+    return (
+        <section>
+            <DataTablePatiens />
+        </section>
     )
 }

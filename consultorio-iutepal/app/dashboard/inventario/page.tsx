@@ -1,3 +1,7 @@
 export default function Page() {
-    return <p>Inventario Page</p>;
+    return (
+        <div>
+            <h1>Page</h1>
+        </div>
+    );
 }

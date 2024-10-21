@@ -16,4 +16,5 @@ export const links = [
     },
     { name: "Reportes", href: "/dashboard/reportes", icon: BarChart },
     { name: "Inventario", href: "/dashboard/inventario", icon: WalletIcon },
+    { name: "Perfil", href: "/dashboard/perfil", icon: UsersIcon },
   ];

@@ -4,8 +4,8 @@ import Link from "next/link";
 
 export default function Page() {
   return (
-    <section className="gap-5 m-auto grid grid-cols-3 w-full h-full">
-      {links.map((link, index) => {
+    <section className="gap-5 m-auto grid grid-cols-2 w-full h-full">
+      {links.slice(1).map((link, index) => {
         const LinkIcon = link.icon;
         return (
           <Link key={index} href={link.href}>
