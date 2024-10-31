@@ -26,6 +26,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -33,18 +35,34 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: '',
+      password: '',
     },
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    const { username, password } = values;
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: username,
+      password,
+    });
+
+    setIsLoading(false);
+
+    if (error) {
+      console.error('Error logging in:', error.message);
+      // Aquí puedes mostrar un mensaje de error al usuario
+    } else {
+      router.push('/dashboard');
+    }
   }
 
   return (
@@ -93,12 +111,12 @@ export default function Login() {
                           <FormControl>
                             <div className="max-w- relative flex w-full items-center space-x-2">
                               <div className="grid w-full max-w-lg items-center">
-                                <Label
+                                <FormLabel
                                   className="mb-1 text-sm text-black"
                                   htmlFor="email"
                                 >
                                   Correo electrónico
-                                </Label>
+                                </FormLabel>
                                 <Input
                                   id="email"
                                   placeholder="nameexample@gmail.com"
@@ -131,26 +149,21 @@ export default function Login() {
                           <FormControl>
                             <div className="relative flex w-full max-w-lg items-center space-x-2">
                               <div className="grid w-full max-w-lg items-center">
-                                <Label
+                                <FormLabel
                                   className="mb-1 text-sm text-black"
                                   htmlFor="password"
                                 >
                                   Contraseña
-                                </Label>
+                                </FormLabel>
                                 <Input
                                   id="password"
                                   placeholder="*********"
-                                  // type={!showPassword ? 'password' : 'text'}
+                                  type={'password'}
                                   required
-                                  // error={error ? true : false}
                                   className="block w-full rounded-md border-0  bg-white py-1.5 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset   sm:text-sm sm:leading-6"
                                   {...field}
                                 />
                               </div>
-                              {/* <div className="absolute right-3 top-7" onClick={() => setShowPassword(!showPassword)}>
-                                                                {showPassword && <Eye className="text-gray-light" />}
-                                                                {!showPassword && <EyeOff className="text-gray-light" />}
-                                                            </div> */}
                             </div>
                           </FormControl>
                           <FormMessage>
@@ -213,17 +226,9 @@ export default function Login() {
                       <Button
                         className="error:border-red-900 mt-7 flex w-full  justify-center rounded-md px-3 py-1.5 text-sm font-bold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:border-none disabled:bg-button-disabled disabled:text-gray-light lg:mt-14"
                         type="submit"
-                        // disabled={!form.formState.isValid || isPending}
+                        disabled={isLoading}
                       >
-                        {/* {isPending ? (
-                                                    <>
-                                                        <ReloadIcon className="mr-2 size-4 animate-spin" />
-                                                        Cargando...
-                                                    </>
-                                                ) : (
-                                                    'Continuar'
-                                                )} */}
-                        Iniciar sesión
+                        {isLoading ? 'Cargando...' : 'Iniciar sesión'}
                       </Button>
                     </div>
                   </form>
