@@ -1,24 +1,30 @@
 module.exports = {
-  extends: ['next', 'prettier', 'react-app', 'plugin:tailwindcss/recommended'],
-  parserOptions: {
-    babelOptions: {
-      presets: [require.resolve('next/babel')],
-    },
+  env: {
+    browser: true,
+    es2021: true,
   },
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+    'next/core-web-vitals',
+  ],
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
-    '@typescript-eslint/no-explicit-any': 'error',
-    'no-console': 'error',
-    'tailwindcss/no-custom-classname': 'off',
-    'testing-library/prefer-screen-queries': 'off',
-    '@next/next/no-html-link-for-pages': 'off',
-    '@typescript-eslint/no-unused-vars': [
-      'warn',
-      {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-      },
-    ],
-    'tailwindcss/classnames-order': 'off',
-    'import/order': 'off',
+    'prettier/prettier': 'error',
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
   },
 };

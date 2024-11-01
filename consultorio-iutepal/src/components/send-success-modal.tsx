@@ -24,11 +24,11 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
   return (
     <Dialog open={isSuccess} onOpenChange={setIsSuccess}>
       {isSuccess && (
-        <DialogContent className="max-h-auto h-auto max-w-[700px] rounded-lg bg-success-green text-brand-green">
+        <DialogContent className="max-h-auto h-auto max-w-[700px] rounded-lg bg-green-200 text-green-600">
           <DialogHeader>
             <DialogTitle className="mb-3 text-3xl font-bold">{title}</DialogTitle>
           </DialogHeader>
-          <div className="mt-1">{messageBody && <p className="mb-6 text-lg  text-current">{messageBody}</p>}</div>
+          <div className="mt-1">{messageBody && <p className="mb-6 text-lg text-green-700">{messageBody}</p>}</div>
           <div className="flex w-full justify-end">
             {href ? (
               <Link href={href}>
@@ -38,7 +38,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
               </Link>
             ) : (
               <Button
-                className="font-bold text-white"
+                className="font-bold text-white bg-green-800 hover:bg-green-700"
                 onClick={() => {
                   setIsSuccess(false);
                   if (onClickAccept) {

@@ -39,15 +39,29 @@ export const RecoverPasswordModal: React.FC<RecoverPasswordModalProps> = ({ titl
         setIsloading(true);
         const { email } = values;
 
-        const { error } = await supabase.auth.resetPasswordForEmail(email);
+        try {
+            const response = await fetch('/api/auth/recover-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
 
-        setIsloading(false);
+            const data = await response.json();
 
-        if (error) {
-            console.error('Error recovery in:', error.message);
+            setIsloading(false);
+
+            if (!response.ok) {
+                console.error('Error recovery in:', data.message);
+                setIsError(true);
+            } else {
+                setIsSuccess(true);
+            }
+        } catch (error) {
+            console.error('Error recovery in:', error);
+            setIsloading(false);
             setIsError(true);
-        } else {
-            setIsSuccess(true);
         }
     }
 
@@ -100,7 +114,7 @@ export const RecoverPasswordModal: React.FC<RecoverPasswordModalProps> = ({ titl
 
                             <DialogFooter className="mt-7">
                                 <Button
-                                    disabled={!form.formState.isValid}
+                                    disabled={!form.formState.isValid || loading}
                                     type="submit"
                                     className="mb-3 px-10 font-bold md:mb-0"
                                     variant={'default'}

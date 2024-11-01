@@ -4,13 +4,12 @@ import PasswordRequirements from "@/src/components/password-requirements";
 import { ErrorModal } from "@/src/components/send-error-modal";
 import { SuccessModal } from "@/src/components/send-success-modal";
 import { Button } from "@/src/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
-import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/src/components/ui/input-otp";
 import { supabase } from "@/src/lib/supabase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, RefreshCcw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -24,7 +23,6 @@ const ChangePassword = () => {
 
     const formSchema = z
         .object({
-            code: z.string().min(6, { message: 'El código debe tener al menos 6 caracteres' }),
             newPassword: z
                 .string()
                 .min(8, { message: 'Al menos 8 caracteres' })
@@ -51,39 +49,14 @@ const ChangePassword = () => {
         defaultValues: {
             newPassword: '',
             confirmPassword: '',
-            code: '',
         },
     });
-
-    useEffect(() => {
-        const recoveryEmail = localStorage.getItem('recoveryEmail');
-        if (recoveryEmail) {
-            console.log('Correo de recuperación:', recoveryEmail);
-        }
-    }, []);
-
-    const resentCode = async (values: { email: string; }) => {
-        setIsloading(true);
-        const { email } = values;
-
-        const { error } = await supabase.auth.resetPasswordForEmail(email);
-
-        setIsloading(false);
-
-        if (error) {
-            console.error('Error recovery in:', error.message);
-            setIsError(true);
-        }
-    };
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsloading(true);
 
-        const { newPassword: password } = values;
-
-        const { error } = await supabase.auth.updateUser({
-            password,
-        });
+        const { newPassword } = values;
+        const { data: resetData, error } = await supabase.auth.updateUser({ password: newPassword });
 
         setIsloading(false);
 
@@ -91,6 +64,7 @@ const ChangePassword = () => {
             console.error('Error logging in:', error.message);
             setIsError(true);
         } else {
+            if (resetData) console.log(resetData);
             setIsSuccess(true);
         }
     }
@@ -124,12 +98,10 @@ const ChangePassword = () => {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-
                             <h2 className="text-left text-gray-light mb-3">
                                 Para tener mayor seguridad en tu cuenta, asegúrate que tu contraseña contenga estos elementos:
                             </h2>
                             <PasswordRequirements password={form.getValues('newPassword')} />
-
 
                             <FormField
                                 control={form.control}
@@ -199,45 +171,16 @@ const ChangePassword = () => {
                                 )}
                             />
 
-                            {/* <div className="my-5 flex items-center">
-                                <h2 className="text-gray-light">
-                                    ¿No recibiste el correo?
-                                </h2>
-
-                                <Button
-                                    variant={'ghost'}
-                                    className="ml-1 cursor-pointer p-1 font-bold text-brand-blue hover:bg-transparent focus:bg-transparent active:bg-transparent"
-                                    type="button"
-                                    onClick={() => {
-                                        const recoveryEmail = localStorage.getItem('recoveryEmail');
-                                        if (recoveryEmail) {
-                                            resentCode({ email: recoveryEmail });
-                                        } else {
-                                            console.error('No se encontró el correo electrónico de recuperación');
-                                        }
-                                    }}                                >
-                                    {isLoading ? (
-                                        <>
-                                            <RefreshCcw className="mr-2 size-4 animate-spin" />
-                                            Cargando...
-                                        </>
-                                    ) : (
-                                        'Haz click aqui para reenviarlo'
-                                    )}
-                                </Button>
-                            </div> */}
-                            <div>
-                                <Button className="w-full" variant={'default'} disabled={!form.formState.isValid}>
-                                    {isLoading ? (
-                                        <>
-                                            <RefreshCcw className="mr-2 size-4 animate-spin" />
-                                            Cargando...
-                                        </>
-                                    ) : (
-                                        'Confirmar'
-                                    )}
-                                </Button>
-                            </div>
+                            <Button className="w-full" type="submit" disabled={isLoading} variant={'default'}>
+                                {isLoading ? (
+                                    <>
+                                        <RefreshCcw className="mr-2 size-4 animate-spin" />
+                                        Cargando...
+                                    </>
+                                ) : (
+                                    'Confirmar'
+                                )}
+                            </Button>
                         </form>
                     </Form>
                 </div>

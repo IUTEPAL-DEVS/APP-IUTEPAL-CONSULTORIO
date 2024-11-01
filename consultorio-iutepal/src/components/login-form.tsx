@@ -44,21 +44,32 @@ export default function LoginForm() {
     setErrorMessage(null);
     const { username, password } = values;
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: username,
-      password,
-    });
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: username, password }),
+      });
 
-    setIsLoading(false);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error logging in');
+      }
 
-    if (error) {
-      console.error('Error logging in:', error.message);
-      setErrorMessage('Contraseña o correo electrónico incorrecto, por favor intenta de nuevo');
-    } else {
+      const data = await response.json();
+      console.log('User data:', data);
+
       router.push('/dashboard');
+    } catch (error) {
+      console.error('Error in login:', error);
+      setErrorMessage('Contraseña o correo electrónico incorrecto, por favor intenta de nuevo');
+    } finally {
+      setIsLoading(false);
     }
   }
-
+  
   return (
     <section className="fade relative h-screen">
       <div className="flex min-h-full flex-col  items-center justify-center md:my-16  lg:my-0 lg:flex-row">
