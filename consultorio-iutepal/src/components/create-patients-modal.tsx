@@ -125,7 +125,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-3xl overflow-y-auto">
+            <DialogContent className="sm:max-w-3xl overflow-y-scroll sm:h-2/3">
                 <DialogHeader>
                     <DialogTitle className="text-xl">Crear paciente nuevo</DialogTitle>
                     <DialogDescription>
