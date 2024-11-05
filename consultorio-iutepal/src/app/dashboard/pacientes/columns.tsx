@@ -5,151 +5,9 @@ import { Checkbox } from "@/src/components/ui/checkbox"
 import { Button } from "@/src/components/ui/button"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/src/components/ui/dropdown-menu"
+import { Patients } from "@/src/types/patient"
 
-
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-    id: string
-    name: string
-    lastName: string
-    date: string
-    post: string
-    MC: string
-    status: "activo" | "inactivo"
-    email?: string
-}
-
-export const data: Payment[] = [
-    {
-        name: "Carlos José",
-        lastName: "Pérez García",
-        date: "05/01/2024",
-        id: "27654321",
-        post: "Administracion",
-        MC: "Evaluación Anual",
-        status: "inactivo",
-    },
-    {
-        name: "Mariana Alejandra",
-        lastName: "García Pérez",
-        date: "12/01/2024",
-        id: "29876543",
-        post: "Administracion",
-        MC: "Ingreso",
-        status: "activo",
-    },
-    {
-        name: "José Luis",
-        lastName: "Martínez González",
-        date: "19/01/2024",
-        id: "24567890",
-        post: "Estudiante",
-        MC: "Revisión Médica",
-        status: "activo",
-    },
-    {
-        name: "Luisa Fernanda",
-        lastName: "González Martínez",
-        date: "26/01/2024",
-        id: "26789012",
-        post: "Administración",
-        MC: "Capacitación",
-        status: "inactivo",
-    },
-    {
-        name: "Gabriela Isabel",
-        lastName: "Hernández Pérez",
-        date: "02/02/2024",
-        id: "28901234",
-        post: "Estudiante",
-        MC: "Evaluación Psicológica",
-        status: "activo",
-    },
-    {
-        name: "Andrés José",
-        lastName: "Pérez Hernández",
-        date: "09/02/2024",
-        id: "21034567",
-        post: "Administración",
-        MC: "Actualización de Datos",
-        status: "inactivo",
-    },
-    {
-        name: "Sofía Alejandra",
-        lastName: "García Martínez",
-        date: "16/02/2024",
-        id: "22345678",
-        post: "Estudiante",
-        MC: "Consulta General",
-        status: "activo",
-    },
-    {
-        name: "Eduardo José",
-        lastName: "Martínez García",
-        date: "07/01/2024",
-        id: "39567890",
-        post: "Administración",
-        MC: "Inducción de Personal",
-        status: "activo",
-    },
-    {
-        name: "Samantha Alejandra",
-        lastName: "González Pérez",
-        date: "15/01/2024",
-        id: "40789123",
-        post: "Administración",
-        MC: "Formación en Gestión",
-        status: "inactivo",
-    },
-    {
-        name: "Diego José",
-        lastName: "Hernández Martínez",
-        date: "23/01/2024",
-        id: "41901234",
-        post: "Estudiante",
-        MC: "Orientación Académica",
-        status: "activo",
-    },
-    {
-        name: "Lucía Alejandra",
-        lastName: "Pérez García",
-        date: "31/01/2024",
-        id: "43012345",
-        post: "Administración",
-        MC: "Desarrollo Profesional",
-        status: "inactivo",
-    },
-    {
-        name: "Omar José",
-        lastName: "Martínez Pérez",
-        date: "08/02/2024",
-        id: "44234567",
-        post: "Estudiante",
-        MC: "Asesoría de Carrera",
-        status: "activo",
-    },
-    {
-        name: "Carmen Lugo",
-        lastName: "García Hernández",
-        date: "16/02/2024",
-        id: "45345678",
-        post: "Administración",
-        MC: "Evaluación de Competencias",
-        status: "inactivo",
-    },
-    {
-        name: "Julio César",
-        lastName: "Salas Martínez",
-        date: "24/02/2024",
-        id: "46456789",
-        post: "Estudiante",
-        MC: "Revisión de Plan de Estudios",
-        status: "activo",
-    },
-]
-
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Patients>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -173,7 +31,7 @@ export const columns: ColumnDef<Payment>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "id",
+        accessorKey: "cedula",
         header: ({ column }) => {
             return (
                 <Button
@@ -185,40 +43,40 @@ export const columns: ColumnDef<Payment>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("id")}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("cedula")}</div>,
     },
     {
-        accessorKey: "name",
+        accessorKey: "nom1",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Nombres
+                    Nombre
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("nom1")}</div>,
     },
     {
-        accessorKey: "lastName",
+        accessorKey: "ape1",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Apellidos
+                    Apellido
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("lastName")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("ape1")}</div>,
     },
     {
-        accessorKey: "date",
+        accessorKey: "fecn",
         header: ({ column }) => {
             return (
                 <Button
@@ -230,10 +88,10 @@ export const columns: ColumnDef<Payment>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("date")}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("fecn")}</div>,
     },
     {
-        accessorKey: "post",
+        accessorKey: "tipo",
         header: ({ column }) => {
             return (
                 <Button
@@ -245,10 +103,10 @@ export const columns: ColumnDef<Payment>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("post")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("tipo")}</div>,
     },
     {
-        accessorKey: "MC",
+        accessorKey: "motivo_consulta",
         header: ({ column }) => {
             return (
                 <Button
@@ -260,10 +118,10 @@ export const columns: ColumnDef<Payment>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("MC")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("motivo_consulta")}</div>,
     },
     {
-        accessorKey: "status",
+        accessorKey: "diagnostico",
         header: ({ column }) => {
             return (
                 <Button
@@ -275,7 +133,7 @@ export const columns: ColumnDef<Payment>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("status")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("diagnostico")}</div>,
     },
     {
         id: "actions",
@@ -294,7 +152,7 @@ export const columns: ColumnDef<Payment>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.id)}
+                            onClick={() => navigator.clipboard.writeText(payment.cedula)}
                         >
                             Copiar Cedula
                         </DropdownMenuItem>

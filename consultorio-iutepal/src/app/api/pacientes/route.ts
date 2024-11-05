@@ -4,82 +4,78 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Manejar las solicitudes GET, POST, PUT y DELETE
 export async function GET(req: NextRequest) {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({
-        cookies: () => cookieStore
-   
-    });
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient({
+    cookies: () => cookieStore,
+  });
 
-    const { data, error } = await supabase
-        .from('paciente')
-        .select('*');
+  const cedula = req.nextUrl.searchParams.get('cedula');
+  let query = supabase.from('paciente').select('*');
 
-    if (error) {
-        console.log("Error en GET:", error.message);
-        return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+  if (cedula) {
+    query = query.eq('cedula', cedula);
+  }
 
-    return NextResponse.json({ data });
+  const { data, error } = await query;
+
+  if (error) {
+    console.log('Error en GET:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  return NextResponse.json({ data });
 }
 
 export async function POST(req: NextRequest) {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({
-        cookies: () => cookieStore
-    });
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient({
+    cookies: () => cookieStore,
+  });
 
-    const patientData = await req.json();
+  const patientData = await req.json();
 
-    const { data, error } = await supabase
-        .from('paciente')
-        .insert([patientData]);
+  const { data, error } = await supabase.from('paciente').insert([patientData]);
 
-    if (error) {
-        console.log("Error en POST:", error.message);
-        return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+  if (error) {
+    console.log('Error en POST:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
 
-    return NextResponse.json({ data });
+  return NextResponse.json({ data });
 }
 
 export async function PUT(req: NextRequest) {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({
-        cookies: () => cookieStore
-    });
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient({
+    cookies: () => cookieStore,
+  });
 
-    const { cedula, ...patientData } = await req.json();
+  const { cedula, ...patientData } = await req.json();
 
-    const { data, error } = await supabase
-        .from('paciente')
-        .update(patientData)
-        .eq('cedula', cedula);
+  const { data, error } = await supabase.from('paciente').update(patientData).eq('cedula', cedula);
 
-    if (error) {
-        console.log("Error en PUT:", error.message);
-        return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+  if (error) {
+    console.log('Error en PUT:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
 
-    return NextResponse.json({ data });
+  return NextResponse.json({ data });
 }
 
 export async function DELETE(req: NextRequest) {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({
-        cookies: () => cookieStore
-    });
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient({
+    cookies: () => cookieStore,
+  });
 
-    const { cedula } = await req.json();
+  const { cedula } = await req.json();
 
-    const { data, error } = await supabase
-        .from('paciente')
-        .delete()
-        .eq('cedula', cedula);
+  const { data, error } = await supabase.from('paciente').delete().eq('cedula', cedula);
 
-    if (error) {
-        console.log("Error en DELETE:", error.message);
-        return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+  if (error) {
+    console.log('Error en DELETE:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
 
-    return NextResponse.json({ data });
+  return NextResponse.json({ data });
 }

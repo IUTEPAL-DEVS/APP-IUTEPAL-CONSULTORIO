@@ -29,14 +29,26 @@ import {
     TableHeader,
     TableRow,
 } from "@/src/components/ui/table"
-import { columns, data } from "./columns"
+import { columns } from "./columns"
+import { PatientsCreateModal } from "@/src/components/create-patients-modal"
 
 export function DataTablePatiens() {
+    const [data, setData] = React.useState([]);
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
     const [globalFilter, setGlobalFilter] = React.useState("")
+
+    React.useEffect(() => {
+        async function fetchData() {
+            const response = await fetch('/api/pacientes');
+            const result = await response.json();
+            setData(result.data);
+            console.log(result.data);
+        }
+        fetchData();
+    }, []);
 
     const table = useReactTable({
         data: data,
@@ -94,7 +106,9 @@ export function DataTablePatiens() {
                             })}
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <Button className="ml-5">Agregar Paciente</Button>
+                <PatientsCreateModal>
+                    <Button className="ml-5">Agregar Paciente</Button>
+                </PatientsCreateModal>
             </div>
             <div className="rounded-md border">
                 <Table>
