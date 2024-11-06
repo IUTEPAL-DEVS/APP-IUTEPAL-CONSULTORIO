@@ -31,7 +31,7 @@ export const columns: ColumnDef<Patients>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "cedula",
+        accessorKey: "id",
         header: ({ column }) => {
             return (
                 <Button
@@ -43,10 +43,10 @@ export const columns: ColumnDef<Patients>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("cedula")}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("id")}</div>,
     },
     {
-        accessorKey: "nom1",
+        accessorKey: "firts_name",
         header: ({ column }) => {
             return (
                 <Button
@@ -58,10 +58,10 @@ export const columns: ColumnDef<Patients>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="capitalize">{row.getValue("nom1")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("firts_name")}</div>,
     },
     {
-        accessorKey: "ape1",
+        accessorKey: "last_name",
         header: ({ column }) => {
             return (
                 <Button
@@ -73,10 +73,10 @@ export const columns: ColumnDef<Patients>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="capitalize">{row.getValue("ape1")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("last_name")}</div>,
     },
     {
-        accessorKey: "fecn",
+        accessorKey: "dob",
         header: ({ column }) => {
             return (
                 <Button
@@ -88,10 +88,10 @@ export const columns: ColumnDef<Patients>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("fecn")}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("dob")}</div>,
     },
     {
-        accessorKey: "tipo",
+        accessorKey: "charge",
         header: ({ column }) => {
             return (
                 <Button
@@ -103,10 +103,10 @@ export const columns: ColumnDef<Patients>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="capitalize">{row.getValue("tipo")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("charge")}</div>,
     },
     {
-        accessorKey: "motivo_consulta",
+        accessorKey: "query_reason",
         header: ({ column }) => {
             return (
                 <Button
@@ -118,10 +118,10 @@ export const columns: ColumnDef<Patients>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="capitalize">{row.getValue("motivo_consulta")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("query_reason")}</div>,
     },
     {
-        accessorKey: "diagnostico",
+        accessorKey: "diagnosis",
         header: ({ column }) => {
             return (
                 <Button
@@ -133,7 +133,7 @@ export const columns: ColumnDef<Patients>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="capitalize">{row.getValue("diagnostico")}</div>,
+        cell: ({ row }) => <div className="capitalize">{row.getValue("diagnosis")}</div>,
     },
     {
         id: "actions",
@@ -145,14 +145,14 @@ export const columns: ColumnDef<Patients>[] = [
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Abrir menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.cedula)}
+                            onClick={() => navigator.clipboard.writeText(payment.id)}
                         >
                             Copiar Cedula
                         </DropdownMenuItem>

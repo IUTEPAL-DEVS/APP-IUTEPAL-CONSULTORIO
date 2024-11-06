@@ -19,9 +19,9 @@ const PasswordRequirements: React.FC<PasswordRequirementsProps> = ({ password })
     <div className="mb-10 text-black">
       {checks.map((check, index) => (
         <div key={index} className="flex flex-row items-center gap-2">
-          {hasContent && (check.test(password) ? <CircleCheck /> : <CircleX />)}
+          {hasContent && (check.test(password) ? <CircleCheck className='text-green-500' /> : <CircleX className='text-destructive' />)}
           <div
-            className={`${hasContent ? (check.test(password) ? 'text-brand-green' : 'text-destructive') : 'text-black'} font-bold`}
+            className={`${hasContent ? (check.test(password) ? 'text-green-500' : 'text-destructive') : 'text-black'} font-bold`}
           >
             {check.text}
           </div>

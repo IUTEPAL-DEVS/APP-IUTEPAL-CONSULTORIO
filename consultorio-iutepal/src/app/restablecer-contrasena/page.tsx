@@ -13,7 +13,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-
 const ChangePassword = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isConfirmPassword, setIsConfirmPassword] = useState(false);
@@ -109,13 +108,13 @@ const ChangePassword = () => {
                                 render={({ field, fieldState: { error } }) => (
                                     <FormItem className="mt-2">
                                         <FormControl>
-                                            <div className="relative flex w-full  items-center space-x-2">
+                                            <div className="relative flex w-full items-center space-x-2">
                                                 <div className="grid w-full items-center">
                                                     <Input
                                                         id="newPassword"
                                                         placeholder="Nueva contraseña"
                                                         type={!showPassword ? 'password' : 'text'}
-                                                        className="block w-full rounded-md border-0   py-1.5 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset   sm:text-sm sm:leading-6"
+                                                        className="block w-full rounded-md border-0 py-1.5 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                                                         {...field}
                                                     />
                                                 </div>
@@ -141,13 +140,13 @@ const ChangePassword = () => {
                                 render={({ field, fieldState: { error } }) => (
                                     <FormItem className="mt-2">
                                         <FormControl>
-                                            <div className="relative flex w-full  items-center space-x-2">
+                                            <div className="relative flex w-full items-center space-x-2">
                                                 <div className="grid w-full items-center">
                                                     <Input
                                                         id="confirmPassword"
                                                         placeholder="Confirmar contraseña"
                                                         type={!isConfirmPassword ? 'password' : 'text'}
-                                                        className="block w-full rounded-md border-0  py-1.5 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset   sm:text-sm sm:leading-6"
+                                                        className="block w-full rounded-md border-0 py-1.5 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                                                         {...field}
                                                     />
                                                 </div>

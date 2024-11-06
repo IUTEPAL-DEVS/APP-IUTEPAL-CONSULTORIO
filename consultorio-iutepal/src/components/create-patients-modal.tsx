@@ -26,98 +26,105 @@ interface PatientsCreateModalProps {
 }
 
 const FormSchema = z.object({
-    cedula: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
+    id: z.string(),
+    firts_name: z.string(),
+    second_name: z.string(),
+    last_name: z.string(),
+    second_last_name: z.string(),
+    dob: z.date({
+        required_error: "A date of birth is required.",
     }),
-    nom1: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    nom2: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    ape1: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    ape2: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    fecn: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    altura: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    peso: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    tipo: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    direccion: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    telefono: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    email: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    sexo: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    edad: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    motivo_consulta: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    diagnostico: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    tipo_sangre: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    reposo: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
+    height: z.string(),
+    weight: z.string(),
+    charge: z.string(),
+    direction: z.string(),
+    phone: z.string(),
+    email: z.string(),
+    sex: z.string(),
+    age: z.string(),
+    query_reason: z.string(),
+    diagnosis: z.string(),
+    blood_type: z.string(),
+    temperature: z.string(),
+    pathology: z.string(),
+    clinical_history: z.boolean().default(false).optional(),
+    recipe_url: z.string().optional(),
+    smoke: z.boolean().default(false).optional(),
+    drink: z.boolean().default(false).optional(),
+    allergic: z.boolean().default(false).optional(),
+    disability: z.boolean().default(false).optional(),
 })
 
 export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
     const [hasReposo, setHasReposo] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            cedula: "",
-            nom1: "",
-            nom2: "",
-            ape1: "",
-            ape2: "",
-            fecn: "",
-            altura: "",
-            peso: "",
-            tipo: "",
-            direccion: "",
-            telefono: "",
+            id: "",
+            firts_name: "",
+            second_name: "",
+            last_name: "",
+            second_last_name: "",
+            height: "",
+            weight: "",
+            charge: "",
+            direction: "",
+            phone: "",
             email: "",
-            sexo: "",
-            edad: "",
-            motivo_consulta: "",
-            diagnostico: "",
-            tipo_sangre: "",
-            reposo: "",
+            sex: "",
+            age: "",
+            query_reason: "",
+            diagnosis: "",
+            blood_type: "",
+            temperature: "",
+            pathology: "",
+            recipe_url: "",
+            clinical_history: false,
+            smoke: false,
+            drink: false,
+            allergic: false,
+            disability: false,
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        })
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
+        setIsLoading(true);
+        setIsSuccess(false);
+        setIsError(false);
+
+        try {
+            const response = await fetch('/api/pacientes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                toast({
+                    title: "Error",
+                    description: errorData.error,
+                });
+                setIsError(true);
+                return;
+            }
+
+            const result = await response.json();
+            console.log(result);
+            setIsSuccess(true);
+
+        } catch (error) {
+            console.error(error);
+            setIsError(true);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -125,7 +132,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-3xl overflow-y-scroll sm:h-2/3">
+            <DialogContent className="sm:max-w-3xl overflow-y-scroll sm:h-2/3 lg:h-5/6">
                 <DialogHeader>
                     <DialogTitle className="text-xl">Crear paciente nuevo</DialogTitle>
                     <DialogDescription>
@@ -136,7 +143,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <FormField
                             control={form.control}
-                            name="cedula"
+                            name="id"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Cedula</FormLabel>
@@ -150,7 +157,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                         <div className="grid grid-cols-4 gap-4">
                             <FormField
                                 control={form.control}
-                                name="nom1"
+                                name="firts_name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Primer Nombre</FormLabel>
@@ -163,7 +170,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="nom1"
+                                name="second_name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Segundo Nombre</FormLabel>
@@ -176,7 +183,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="ape1"
+                                name="last_name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Apellido Paterno </FormLabel>
@@ -189,7 +196,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="ape2"
+                                name="second_last_name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Apellido Materno</FormLabel>
@@ -202,7 +209,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="tipo"
+                                name="charge"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Cargo</FormLabel>
@@ -224,7 +231,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="direccion"
+                                name="direction"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Direccion Corta</FormLabel>
@@ -237,7 +244,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="telefono"
+                                name="phone"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Telefono celular</FormLabel>
@@ -263,7 +270,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="fecn"
+                                name="dob"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Fecha de Nacimiento</FormLabel>
@@ -304,7 +311,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="altura"
+                                name="height"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Altura</FormLabel>
@@ -317,7 +324,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="peso"
+                                name="weight"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Peso</FormLabel>
@@ -330,7 +337,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="sexo"
+                                name="sex"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Sexo</FormLabel>
@@ -341,8 +348,8 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="M">Masculino</SelectItem>
-                                                <SelectItem value="F">Femenino</SelectItem>
+                                                <SelectItem value="Masculino">Masculino</SelectItem>
+                                                <SelectItem value="Femenino">Femenino</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -351,7 +358,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="edad"
+                                name="age"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Edad</FormLabel>
@@ -364,7 +371,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="tipo_sangre"
+                                name="blood_type"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Tipo de Sangre</FormLabel>
@@ -377,7 +384,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="temperatura"
+                                name="temperature"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Temperatura</FormLabel>
@@ -390,7 +397,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="patologia"
+                                name="pathology"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Patologia</FormLabel>
@@ -425,7 +432,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                                                     value={language.label}
                                                                     key={language.value}
                                                                     onSelect={() => {
-                                                                        form.setValue("patologia", language.value)
+                                                                        form.setValue("pathology", language.value)
                                                                     }}
                                                                 >
                                                                     <Check
@@ -452,7 +459,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                         <div className="grid grid-cols-2 gap-3">
                             <FormField
                                 control={form.control}
-                                name="motivo_consulta"
+                                name="query_reason"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Motivo de Consulta</FormLabel>
@@ -469,7 +476,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="diagnostico"
+                                name="diagnosis"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Diagnostico</FormLabel>
@@ -487,12 +494,11 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                         <div className="grid grid-cols-4 gap-4">
                             <FormField
                                 control={form.control}
-                                name="antescendentes_clinicos"
+                                name="clinical_history"
                                 render={({ field }) => (
                                     <FormItem className="flex items-center space-x-2" >
                                         <FormControl>
                                             <Checkbox
-                                                checked={field.value}
                                                 onCheckedChange={field.onChange}
                                             />
                                         </FormControl>
@@ -505,12 +511,11 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             <div>
                                 <FormField
                                     control={form.control}
-                                    name="antescendentes_clinicos"
+                                    name="smoke"
                                     render={({ field }) => (
                                         <FormItem className="flex items-center space-x-2" >
                                             <FormControl>
                                                 <Checkbox
-                                                    checked={field.value}
                                                     onCheckedChange={field.onChange}
                                                 />
                                             </FormControl>
@@ -522,12 +527,11 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                 />
                                 <FormField
                                     control={form.control}
-                                    name="antescendentes_clinicos"
+                                    name="drink"
                                     render={({ field }) => (
                                         <FormItem className="flex items-center space-x-2" >
                                             <FormControl>
                                                 <Checkbox
-                                                    checked={field.value}
                                                     onCheckedChange={field.onChange}
                                                 />
                                             </FormControl>
@@ -539,12 +543,11 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                 />
                                 <FormField
                                     control={form.control}
-                                    name="antescendentes_clinicos"
+                                    name="allergic"
                                     render={({ field }) => (
                                         <FormItem className="flex items-center space-x-2" >
                                             <FormControl>
                                                 <Checkbox
-                                                    checked={field.value}
                                                     onCheckedChange={field.onChange}
                                                 />
                                             </FormControl>
@@ -557,12 +560,11 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                             </div>
                             <FormField
                                 control={form.control}
-                                name="antescendentes_clinicos"
+                                name="disability"
                                 render={({ field }) => (
                                     <FormItem className="flex items-center space-x-2" >
                                         <FormControl>
                                             <Checkbox
-                                                checked={field.value}
                                                 onCheckedChange={field.onChange}
                                             />
                                         </FormControl>
@@ -572,28 +574,23 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="reposoCheckbox"
-                                render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-2">
-                                        <FormControl>
-                                            <Checkbox
-                                                checked={hasReposo}
-                                                onCheckedChange={(checked) => setHasReposo(checked)}
-                                            />
-                                        </FormControl>
-                                        <FormLabel>
-                                            El paciente tiene algun tipo de reposo/recipe?
-                                        </FormLabel>
-                                    </FormItem>
-                                )}
-                            />
+                            <FormItem className="flex items-center space-x-2">
+                                <FormControl>
+                                    <Checkbox
+                                        checked={hasReposo}
+                                        onCheckedChange={(checked) => setHasReposo(checked === true)}
+                                    />
+                                </FormControl>
+                                <FormLabel>
+                                    El paciente tiene algun tipo de reposo/recipe?
+                                </FormLabel>
+                            </FormItem>
+
                         </div>
                         {hasReposo && (
                             <FormField
                                 control={form.control}
-                                name="reposo"
+                                name="recipe_url"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Reposo</FormLabel>
@@ -607,8 +604,12 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                         )}
 
                         <DialogFooter>
-                            <Button type="submit">Crear</Button>
+                            <Button type="submit" disabled={isLoading}>
+                                {isLoading ? "Creando..." : "Crear"}
+                            </Button>
                         </DialogFooter>
+                        {isSuccess && <p className="text-green-500">Paciente creado exitosamente!</p>}
+                        {isError && <p className="text-red-500">Hubo un error al crear el paciente.</p>}
                     </form>
                 </Form>
             </DialogContent>

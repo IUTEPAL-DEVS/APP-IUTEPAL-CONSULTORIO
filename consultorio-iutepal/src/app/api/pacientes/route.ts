@@ -9,11 +9,11 @@ export async function GET(req: NextRequest) {
     cookies: () => cookieStore,
   });
 
-  const cedula = req.nextUrl.searchParams.get('cedula');
-  let query = supabase.from('paciente').select('*');
+  const cedula = req.nextUrl.searchParams.get('id');
+  let query = supabase.from('patient').select('*');
 
   if (cedula) {
-    query = query.eq('cedula', cedula);
+    query = query.eq('id', cedula);
   }
 
   const { data, error } = await query;
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
   const patientData = await req.json();
 
-  const { data, error } = await supabase.from('paciente').insert([patientData]);
+  const { data, error } = await supabase.from('patient').insert([patientData]);
 
   if (error) {
     console.log('Error en POST:', error.message);
@@ -52,7 +52,7 @@ export async function PUT(req: NextRequest) {
 
   const { cedula, ...patientData } = await req.json();
 
-  const { data, error } = await supabase.from('paciente').update(patientData).eq('cedula', cedula);
+  const { data, error } = await supabase.from('patient').update(patientData).eq('id', cedula);
 
   if (error) {
     console.log('Error en PUT:', error.message);
@@ -70,7 +70,7 @@ export async function DELETE(req: NextRequest) {
 
   const { cedula } = await req.json();
 
-  const { data, error } = await supabase.from('paciente').delete().eq('cedula', cedula);
+  const { data, error } = await supabase.from('patient').delete().eq('id', cedula);
 
   if (error) {
     console.log('Error en DELETE:', error.message);
