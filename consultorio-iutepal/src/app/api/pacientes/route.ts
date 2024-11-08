@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const cookieStore = cookies();
   const supabase = createRouteHandlerClient({
-    cookies: () => cookieStore,
+      cookies: () => cookieStore,
   });
 
   const { cedula, ...patientData } = await req.json();
@@ -55,8 +55,8 @@ export async function PUT(req: NextRequest) {
   const { data, error } = await supabase.from('patient').update(patientData).eq('id', cedula);
 
   if (error) {
-    console.log('Error en PUT:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 400 });
+      console.log('Error en PUT:', error.message);
+      return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
   return NextResponse.json({ data });

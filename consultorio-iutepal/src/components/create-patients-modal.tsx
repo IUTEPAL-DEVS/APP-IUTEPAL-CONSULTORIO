@@ -1,6 +1,6 @@
 "use client";
 
-import { z } from "zod";
+import { optional, z } from "zod";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
@@ -12,50 +12,55 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { format } from "date-fns";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "../lib/utils";
+import { useEffect, useState } from "react";
+import { Checkbox } from "./ui/checkbox";
 import { Calendar } from "./ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import Link from "next/link";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/src/components/ui/command";
 import { languages } from "@/utils/patologia";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
 import { Textarea } from "./ui/textarea";
-import { Checkbox } from "./ui/checkbox";
-import { useState } from "react";
+import { ErrorModal } from "./send-error-modal";
+import { SuccessModal } from "./send-success-modal";
 
 interface PatientsCreateModalProps {
     children: React.ReactNode
+    id?: string
+    title: string
+    sub: string
+    onRefresh: () => void
 }
 
 const FormSchema = z.object({
-    id: z.string(),
-    firts_name: z.string(),
-    second_name: z.string(),
-    last_name: z.string(),
-    second_last_name: z.string(),
+    id: z.string().optional(),
+    firts_name: z.string().optional(),
+    second_name: z.string().optional(),
+    last_name: z.string().optional(),
+    second_last_name: z.string().optional(),
     dob: z.date({
-        required_error: "A date of birth is required.",
-    }),
-    height: z.string(),
-    weight: z.string(),
-    charge: z.string(),
-    direction: z.string(),
-    phone: z.string(),
-    email: z.string(),
-    sex: z.string(),
-    age: z.string(),
-    query_reason: z.string(),
-    diagnosis: z.string(),
-    blood_type: z.string(),
-    temperature: z.string(),
-    pathology: z.string(),
-    clinical_history: z.boolean().default(false).optional(),
+        required_error: "La fecha de Nacimiento es requerida.",
+    }).optional(),
+    height: z.string().optional(),
+    weight: z.string().optional(),
+    charge: z.string().optional(),
+    direction: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.string().optional(),
+    sex: z.string().optional(),
+    age: z.string().optional(),
+    query_reason: z.string().optional(),
+    diagnosis: z.string().optional(),
+    blood_type: z.string().optional(),
+    temperature: z.string().optional(),
+    pathology: z.string().optional(),
+    clinical_history: z.boolean().nullable().optional(),
     recipe_url: z.string().optional(),
-    smoke: z.boolean().default(false).optional(),
-    drink: z.boolean().default(false).optional(),
-    allergic: z.boolean().default(false).optional(),
-    disability: z.boolean().default(false).optional(),
-})
+    smoke: z.boolean().nullable().optional(),
+    drink: z.boolean().nullable().optional(),
+    allergic: z.boolean().nullable().optional(),
+    disability: z.boolean().nullable().optional(),
+});
 
-export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
+export function PatientsCreateModal({ children, id, title, sub, onRefresh }: PatientsCreateModalProps) {
     const [hasReposo, setHasReposo] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -64,32 +69,46 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            id: "",
-            firts_name: "",
-            second_name: "",
-            last_name: "",
-            second_last_name: "",
-            height: "",
-            weight: "",
-            charge: "",
-            direction: "",
-            phone: "",
-            email: "",
-            sex: "",
-            age: "",
-            query_reason: "",
-            diagnosis: "",
-            blood_type: "",
-            temperature: "",
-            pathology: "",
-            recipe_url: "",
-            clinical_history: false,
-            smoke: false,
-            drink: false,
-            allergic: false,
-            disability: false,
         },
-    })
+    });
+
+    useEffect(() => {
+        if (id) {
+            const fetchPatient = async () => {
+                const response = await fetch(`/api/pacientes?id=${id}`);
+                const result = await response.json();
+                const patient = result.data[0];
+                form.reset({
+                    id: patient.id.toString(),
+                    firts_name: patient.firts_name,
+                    second_name: patient.second_name,
+                    last_name: patient.last_name,
+                    second_last_name: patient.second_last_name,
+                    dob: new Date(patient.dob),
+                    height: patient.height.toString(),
+                    weight: patient.weight.toString(),
+                    charge: patient.charge,
+                    direction: patient.direction,
+                    phone: patient.phone,
+                    email: patient.email,
+                    sex: patient.sex,
+                    age: patient.age.toString(),
+                    query_reason: patient.query_reason,
+                    diagnosis: patient.diagnosis,
+                    blood_type: patient.blood_type,
+                    temperature: patient.temperature.toString(),
+                    pathology: patient.pathology,
+                    recipe_url: patient.recipe_url,
+                    clinical_history: patient.clinical_history,
+                    smoke: patient.smoke,
+                    drink: patient.drink,
+                    allergic: patient.allergic,
+                    disability: patient.disability,
+                });
+            };
+            fetchPatient();
+        }
+    }, [id, form]);
 
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         setIsLoading(true);
@@ -97,12 +116,21 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
         setIsError(false);
 
         try {
-            const response = await fetch('/api/pacientes', {
-                method: 'POST',
+            const payload = {
+                ...data,
+                id: data.id ? parseInt(data.id, 10) : undefined,
+                height: data.height ? parseFloat(data.height) : undefined,
+                weight: data.weight ? parseFloat(data.weight) : undefined,
+                age: data.age ? parseInt(data.age, 10) : undefined,
+                temperature: data.temperature ? parseFloat(data.temperature) : undefined,
+            };
+
+            const response = await fetch(id ? `/api/pacientes` : '/api/pacientes', {
+                method: id ? 'PUT' : 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({ cedula: id, ...payload }),
             });
 
             if (!response.ok) {
@@ -118,6 +146,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
             const result = await response.json();
             console.log(result);
             setIsSuccess(true);
+            onRefresh();
 
         } catch (error) {
             console.error(error);
@@ -134,9 +163,9 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
             </DialogTrigger>
             <DialogContent className="sm:max-w-3xl overflow-y-scroll sm:h-2/3 lg:h-5/6">
                 <DialogHeader>
-                    <DialogTitle className="text-xl">Crear paciente nuevo</DialogTitle>
+                    <DialogTitle className="text-xl">{title}</DialogTitle>
                     <DialogDescription>
-                        Asegurese de ingresar todos los datos necesarios para la creacion de un nuevo paciente.
+                        Asegurese de ingresar todos los datos necesarios para la {sub} paciente.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -186,7 +215,7 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                 name="last_name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Apellido Paterno </FormLabel>
+                                        <FormLabel>Apellido Paterno</FormLabel>
                                         <FormControl>
                                             <Input {...field} />
                                         </FormControl>
@@ -294,6 +323,18 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                                 </FormControl>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-auto p-0" align="start">
+                                                <Input
+                                                    type="text"
+                                                    placeholder="YYYY-MM-DD"
+                                                    value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                                                    onChange={(e) => {
+                                                        const date = new Date(e.target.value);
+                                                        if (!isNaN(date.getTime())) {
+                                                            field.onChange(date);
+                                                        }
+                                                    }}
+                                                    className="mr-2"
+                                                />
                                                 <Calendar
                                                     mode="single"
                                                     selected={field.value ? new Date(field.value) : undefined}
@@ -465,7 +506,6 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                         <FormLabel>Motivo de Consulta</FormLabel>
                                         <FormControl>
                                             <Textarea
-
                                                 className="resize-none"
                                                 {...field}
                                             />
@@ -496,81 +536,61 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                 control={form.control}
                                 name="clinical_history"
                                 render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-2" >
+                                    <FormItem className="flex items-center space-x-2">
                                         <FormControl>
-                                            <Checkbox
-                                                onCheckedChange={field.onChange}
-                                            />
+                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
                                         </FormControl>
-                                        <FormLabel>
-                                            Posee Antecendentes Clinicos?
-                                        </FormLabel>
+                                        <FormLabel>Posee Antecendentes Clinicos?</FormLabel>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <div>
-                                <FormField
-                                    control={form.control}
-                                    name="smoke"
-                                    render={({ field }) => (
-                                        <FormItem className="flex items-center space-x-2" >
-                                            <FormControl>
-                                                <Checkbox
-                                                    onCheckedChange={field.onChange}
-                                                />
-                                            </FormControl>
-                                            <FormLabel>
-                                                Fuma?
-                                            </FormLabel>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="drink"
-                                    render={({ field }) => (
-                                        <FormItem className="flex items-center space-x-2" >
-                                            <FormControl>
-                                                <Checkbox
-                                                    onCheckedChange={field.onChange}
-                                                />
-                                            </FormControl>
-                                            <FormLabel>
-                                                Bebe?
-                                            </FormLabel>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="allergic"
-                                    render={({ field }) => (
-                                        <FormItem className="flex items-center space-x-2" >
-                                            <FormControl>
-                                                <Checkbox
-                                                    onCheckedChange={field.onChange}
-                                                />
-                                            </FormControl>
-                                            <FormLabel>
-                                                Es Alergico?
-                                            </FormLabel>
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                            <FormField
+                                control={form.control}
+                                name="smoke"
+                                render={({ field }) => (
+                                    <FormItem className="flex items-center space-x-2">
+                                        <FormControl>
+                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
+                                        </FormControl>
+                                        <FormLabel>Fuma?</FormLabel>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="drink"
+                                render={({ field }) => (
+                                    <FormItem className="flex items-center space-x-2">
+                                        <FormControl>
+                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
+                                        </FormControl>
+                                        <FormLabel>Bebe?</FormLabel>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="allergic"
+                                render={({ field }) => (
+                                    <FormItem className="flex items-center space-x-2">
+                                        <FormControl>
+                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
+                                        </FormControl>
+                                        <FormLabel>Es Alergico?</FormLabel>
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={form.control}
                                 name="disability"
                                 render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-2" >
+                                    <FormItem className="flex items-center space-x-2">
                                         <FormControl>
-                                            <Checkbox
-                                                onCheckedChange={field.onChange}
-                                            />
+                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
                                         </FormControl>
-                                        <FormLabel>
-                                            Posee alguna discapacidad?
-                                        </FormLabel>
+                                        <FormLabel>Posee alguna discapacidad?</FormLabel>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -581,11 +601,8 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                         onCheckedChange={(checked) => setHasReposo(checked === true)}
                                     />
                                 </FormControl>
-                                <FormLabel>
-                                    El paciente tiene algun tipo de reposo/recipe?
-                                </FormLabel>
+                                <FormLabel>El paciente tiene algun tipo de reposo/recipe?</FormLabel>
                             </FormItem>
-
                         </div>
                         {hasReposo && (
                             <FormField
@@ -602,14 +619,26 @@ export function PatientsCreateModal({ children }: PatientsCreateModalProps) {
                                 )}
                             />
                         )}
-
                         <DialogFooter>
                             <Button type="submit" disabled={isLoading}>
-                                {isLoading ? "Creando..." : "Crear"}
+                                {isLoading ? "Guardando..." : "Guardar"}
                             </Button>
                         </DialogFooter>
-                        {isSuccess && <p className="text-green-500">Paciente creado exitosamente!</p>}
-                        {isError && <p className="text-red-500">Hubo un error al crear el paciente.</p>}
+                        <ErrorModal
+                            messageBody={
+                                'Hubo un error al guardar el paciente.'
+                            }
+                            title="Error al enviar la solicitud"
+                            isError={isError}
+                            setIsError={setIsError}
+                        />
+                        <SuccessModal
+                            title="Solicitud enviada con éxito"
+                            messageBody="Paciente guardado exitosamente!"
+                            isSuccess={isSuccess}
+                            setIsSuccess={setIsSuccess}
+                            href="/"
+                        />
                     </form>
                 </Form>
             </DialogContent>

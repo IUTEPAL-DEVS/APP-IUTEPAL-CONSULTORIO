@@ -39,6 +39,12 @@ export function DataTablePatiens() {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
     const [globalFilter, setGlobalFilter] = React.useState("")
+    const [refresh, setRefresh] = React.useState(false);
+
+    const handleRefresh = () => {
+        setRefresh(!refresh);
+    };
+
 
     React.useEffect(() => {
         async function fetchData() {
@@ -52,7 +58,7 @@ export function DataTablePatiens() {
 
     const table = useReactTable({
         data: data,
-        columns: columns,
+        columns: columns(handleRefresh),
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
@@ -106,7 +112,7 @@ export function DataTablePatiens() {
                             })}
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <PatientsCreateModal>
+                <PatientsCreateModal sub="creacion de un nuevo" title="Crear paciente nuevo" onRefresh={handleRefresh}>
                     <Button className="ml-5">Agregar Paciente</Button>
                 </PatientsCreateModal>
             </div>

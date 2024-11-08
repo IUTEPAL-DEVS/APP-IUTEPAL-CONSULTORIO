@@ -1,6 +1,7 @@
 export interface Patients {
   id: string;
   firts_name: string;
+  dob: string;
   second_name: string;
   last_name: string;
   second_last_name: string;
