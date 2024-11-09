@@ -19,18 +19,23 @@ import { useEffect, useState } from "react"
 import { User } from "../types/user"
 
 interface ProfileUpdateModalProps {
-    children: React.ReactNode
-    title: string
-    isEmail?: boolean
-    isPhone?: boolean
+    children: React.ReactNode;
+    title: string;
+    isPhone?: boolean;
+    isName?: boolean;
+    isApellidoPaterno?: boolean;
+    isApellidoMaterno?: boolean;
+    onUpdate: () => void;
 }
 
 const FormSchema = z.object({
-    email: z.string().email({ message: "Correo electronico invalido" }).optional(),
     phone: z.string().min(10, { message: "Numero telefonico invalido" }).optional(),
+    name: z.string().min(2, { message: "Nombre inválido" }).optional(),
+    apellido_p: z.string().min(2, { message: "Apellido paterno inválido" }).optional(),
+    apellido_m: z.string().min(2, { message: "Apellido materno inválido" }).optional()
 });
 
-export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children, title, isEmail, isPhone }) => {
+export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children, title, onUpdate,  isName, isPhone, isApellidoPaterno, isApellidoMaterno }) => {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
@@ -46,22 +51,34 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            email: user?.email,
             phone: user?.phone,
+            name: user?.name,
+            apellido_p: user?.apellido_p,
+            apellido_m: user?.apellido_m
         },
     });
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
+    
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
+        const response = await fetch('/api/usuario', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
         });
-    }
 
+        if (response.ok) {
+            toast({
+                title: "Actualización exitosa",
+                description: "Los datos han sido actualizados correctamente.",
+            });
+            onUpdate(); // Refresca los datos del usuario en page.tsx
+        } else {
+            toast({
+                title: "Error",
+                description: "No se pudo actualizar la información. Intente nuevamente.",
+            });
+        }
+    }
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -76,15 +93,15 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        {isEmail && (
+                        {isName && (
                             <FormField
                                 control={form.control}
-                                name="email"
+                                name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Correo Electronico</FormLabel>
+                                        <FormLabel>Nombre</FormLabel>
                                         <FormControl>
-                                            <Input defaultValue={user?.email} {...field} />
+                                            <Input defaultValue={user?.name} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -100,6 +117,36 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
                                         <FormLabel>Numero Telefonico</FormLabel>
                                         <FormControl>
                                             <Input defaultValue={user?.phone} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+                         {isApellidoPaterno && (
+                            <FormField
+                                control={form.control}
+                                name="apellido_p"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Apellido Paterno</FormLabel>
+                                        <FormControl>
+                                            <Input defaultValue={user?.apellido_p} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+                        {isApellidoMaterno && (
+                            <FormField
+                                control={form.control}
+                                name="apellido_m"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Apellido Materno</FormLabel>
+                                        <FormControl>
+                                            <Input defaultValue={user?.apellido_m} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
