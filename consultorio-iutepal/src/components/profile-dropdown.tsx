@@ -1,7 +1,7 @@
 import {
   Bolt,
   LogOut,
-  User,
+  UserIcon,
 } from "lucide-react"
 
 import {
@@ -16,9 +16,24 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { User } from "../types/user"
 
 export function ProfileDropdown() {
+  const [user, setUser] = useState<User | null>(null);
+
   const router = useRouter();
+
+
+  const fetchUser = async () => {
+    const response = await fetch('/api/usuario');
+    const data = await response.json();
+    setUser(data.user);
+  };
+
+  useEffect(() => {
+    fetchUser(); // Llamada a fetchUser cuando el componente se monta
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -40,8 +55,8 @@ export function ProfileDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="cursor-pointer">
         <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage src={user?.avatar_url} alt="Avatar" />
+          <AvatarFallback>{user?.username?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
@@ -49,7 +64,7 @@ export function ProfileDropdown() {
         <DropdownMenuSeparator />
         <Link href="/dashboard/perfil">
           <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
+            <UserIcon className="mr-2 h-4 w-4" />
             <span>Perfil</span>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>

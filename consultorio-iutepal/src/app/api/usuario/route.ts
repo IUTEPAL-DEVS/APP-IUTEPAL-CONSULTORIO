@@ -46,7 +46,7 @@ export async function PUT(req: NextRequest) {
   }
 
   // Obtener los datos del cuerpo de la solicitud
-  const { name, apellido_p, apellido_m, phone } = await req.json();
+  const { name, apellido_p, apellido_m, phone, username, avatar_url } = await req.json();
 
   // Preparamos un objeto con los campos a actualizar
   const updates: Record<string, string | undefined> = {};
@@ -54,6 +54,8 @@ export async function PUT(req: NextRequest) {
   if (apellido_p !== undefined) updates.apellido_p = apellido_p;
   if (apellido_m !== undefined) updates.apellido_m = apellido_m;
   if (phone !== undefined) updates.phone = phone;
+  if (username !== undefined) updates.username = username;
+  if (avatar_url !== undefined) updates.avatar_url = avatar_url;
 
   // Si no hay campos para actualizar, devolvemos un error
   if (Object.keys(updates).length === 0) {

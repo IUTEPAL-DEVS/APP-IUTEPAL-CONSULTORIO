@@ -25,6 +25,8 @@ interface ProfileUpdateModalProps {
     isName?: boolean;
     isApellidoPaterno?: boolean;
     isApellidoMaterno?: boolean;
+    isUsername?: boolean;
+    isImage?: boolean;
     onUpdate: () => void;
 }
 
@@ -32,10 +34,12 @@ const FormSchema = z.object({
     phone: z.string().min(10, { message: "Numero telefonico invalido" }).optional(),
     name: z.string().min(2, { message: "Nombre inválido" }).optional(),
     apellido_p: z.string().min(2, { message: "Apellido paterno inválido" }).optional(),
-    apellido_m: z.string().min(2, { message: "Apellido materno inválido" }).optional()
+    apellido_m: z.string().min(2, { message: "Apellido materno inválido" }).optional(),
+    username: z.string().min(2, { message: "Username inválido" }).optional(),
+    image_url: z.string().optional(),
 });
 
-export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children, title, onUpdate,  isName, isPhone, isApellidoPaterno, isApellidoMaterno }) => {
+export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children, title, onUpdate, isName, isPhone, isApellidoPaterno, isApellidoMaterno, isUsername, isImage }) => {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
@@ -54,11 +58,13 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
             phone: user?.phone,
             name: user?.name,
             apellido_p: user?.apellido_p,
-            apellido_m: user?.apellido_m
+            apellido_m: user?.apellido_m,
+            username: user?.username,
+            image_url: user?.avatar_url,
         },
     });
 
-    
+
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         const response = await fetch('/api/usuario', {
             method: 'PUT',
@@ -123,7 +129,7 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
                                 )}
                             />
                         )}
-                         {isApellidoPaterno && (
+                        {isApellidoPaterno && (
                             <FormField
                                 control={form.control}
                                 name="apellido_p"
@@ -147,6 +153,36 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
                                         <FormLabel>Apellido Materno</FormLabel>
                                         <FormControl>
                                             <Input defaultValue={user?.apellido_m} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+                        {isUsername && (
+                            <FormField
+                                control={form.control}
+                                name="username"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Username</FormLabel>
+                                        <FormControl>
+                                            <Input defaultValue={user?.username} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+                        {isImage && (
+                            <FormField
+                                control={form.control}
+                                name="image_url"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Subir Imagen</FormLabel>
+                                        <FormControl>
+                                            <Input type="file" defaultValue={user?.avatar_url} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
