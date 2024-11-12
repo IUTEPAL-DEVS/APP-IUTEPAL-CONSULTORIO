@@ -8,7 +8,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { RefreshCcw } from 'lucide-react';
-import { supabase } from '@/src/lib/supabase';
 import { ErrorModal } from './send-error-modal';
 import { SuccessModal } from './send-success-modal';
 

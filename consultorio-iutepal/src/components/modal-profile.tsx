@@ -17,6 +17,8 @@ import { toast } from "../hooks/use-toast"
 import { useForm } from "react-hook-form"
 import { useEffect, useState } from "react"
 import { User } from "../types/user"
+import { ErrorModal } from "./send-error-modal"
+import { SuccessModal } from "./send-success-modal"
 
 interface ProfileUpdateModalProps {
     children: React.ReactNode;
@@ -41,6 +43,8 @@ const FormSchema = z.object({
 
 export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children, title, onUpdate, isName, isPhone, isApellidoPaterno, isApellidoMaterno, isUsername, isImage }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [error, setError] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -194,6 +198,20 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
                         </DialogFooter>
                     </form>
                 </Form>
+                <ErrorModal
+                    messageBody={
+                        'Hubo un error al guardar al actualizar.'
+                    }
+                    title="Error al enviar la solicitud"
+                    isError={error}
+                    setIsError={setError}
+                />
+                <SuccessModal
+                    title="Solicitud enviada con éxito"
+                    messageBody="Datos actualizados exitosamente!"
+                    isSuccess={success}
+                    setIsSuccess={setSuccess}
+                />
             </DialogContent>
         </Dialog>
     );

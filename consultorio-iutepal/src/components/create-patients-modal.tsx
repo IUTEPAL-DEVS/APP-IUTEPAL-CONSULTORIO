@@ -53,7 +53,7 @@ const FormSchema = z.object({
     temperature: z.string().optional(),
     pathology: z.string().optional(),
     clinical_history: z.boolean().nullable().optional(),
-    recipe_url: z.string().optional(),
+    recipe_url: z.string().nullable().optional(),
     smoke: z.boolean().nullable().optional(),
     drink: z.boolean().nullable().optional(),
     allergic: z.boolean().nullable().optional(),
@@ -612,7 +612,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                                     <FormItem>
                                         <FormLabel>Reposo</FormLabel>
                                         <FormControl>
-                                            <Input type="file" {...field} />
+                                            <Input type="file" {...field} value={field.value || ''} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -637,7 +637,6 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                             messageBody="Paciente guardado exitosamente!"
                             isSuccess={isSuccess}
                             setIsSuccess={setIsSuccess}
-                            href="/"
                         />
                     </form>
                 </Form>
