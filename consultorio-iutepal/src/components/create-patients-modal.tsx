@@ -314,7 +314,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                                                         )}
                                                     >
                                                         {field.value ? (
-                                                            format(field.value, "PPP")
+                                                            format(field.value, "dd-MM-yyyy")
                                                         ) : (
                                                             <span>Buscar</span>
                                                         )}
@@ -325,10 +325,11 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                                             <PopoverContent className="w-auto p-0" align="start">
                                                 <Input
                                                     type="text"
-                                                    placeholder="YYYY-MM-DD"
-                                                    value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                                                    placeholder="DD-MM-YYYY"
+                                                    value={field.value ? format(field.value, "dd-MM-yyyy") : ""}
                                                     onChange={(e) => {
-                                                        const date = new Date(e.target.value);
+                                                        const [day, month, year] = e.target.value.split("-").map(Number);
+                                                        const date = new Date(year, month - 1, day);
                                                         if (!isNaN(date.getTime())) {
                                                             field.onChange(date);
                                                         }

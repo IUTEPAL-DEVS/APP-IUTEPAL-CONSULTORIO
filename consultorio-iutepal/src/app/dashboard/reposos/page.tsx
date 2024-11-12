@@ -1,54 +1,49 @@
 'use client'
+import { useEffect, useState } from 'react';
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
-import { useState } from "react";
 
-const reposos = [
-    {
-        name: "Carlos Gómez",
-        recipes: "Ver",
-    },
-    {
-        name: "Mariana Fuentes",
-        recipes: "Ver",
-    },
-    {
-        name: "José Martínez",
-        recipes: "Ver",
-    },
-    {
-        name: "Luisa Castillo",
-        recipes: "Ver",
-    },
-    {
-        name: "Gabriela Ramírez",
-        recipes: "Ver",
-    },
-];
+interface Reposo {
+    id: string;
+    patient_name: string;
+    recipe_url: string;
+}
 
 export default function Page() {
-    const [isOpen, setIsOpen] = useState(false);
+    const [reposos, setReposos] = useState<Reposo[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchReposos() {
+            try {
+                const res = await fetch('/api/reposos');
+                if (!res.ok) {
+                    throw new Error('Error fetching data');
+                }
+                const { data } = await res.json();
+                setReposos(data);
+            } catch (error) {
+                console.error('Error fetching reposos:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchReposos();
+    }, []);
+
+    console.log(reposos);
 
     return (
         <section>
-            {/* <Dialog open={isOpen} onClose={(val) => setIsOpen(val)} static={true}>
-                <DialogPanel className="max-w-4xl">
-                    <Flex alignItems="center" justifyContent="between" className="mb-4">
-                        <Title className="mb-3">Importar/Registrar Reposo o Recipe</Title>
-                        <XMarkIcon
-                            className="h-6 w-6 cursor-pointer"
-                            onClick={() => setIsOpen(false)}
-                        />
-                    </Flex>
-                    <FileLoad />
-                </DialogPanel>
-            </Dialog> */}
             <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none flex justify-end">
-                <Button onClick={() => setIsOpen(true)}>
+                <Button>
                     Importar
                 </Button>
             </div>
-            {reposos.length === 0 ? (
+            {loading ? (
+                <p className="mt-3">Cargando...</p>
+            ) : reposos.length === 0 ? (
                 <p className="mt-3">
                     No se encuentran Reposos registrados Actualmente.
                 </p>
@@ -61,10 +56,10 @@ export default function Page() {
                         <CardContent>
                             <ul className="mt-2">
                                 {reposos.map((item) => (
-                                    <li key={item.name} className="flex justify-between">
-                                        <span>{item.name}</span>
-                                        <a href="https://mag.wcoomd.org/uploads/2018/05/blank.pdf" target="_blank" rel="noreferrer" className="hover:underline hover:text-primary font-bold">
-                                            {item.recipes}
+                                    <li key={item.id} className="flex justify-between">
+                                        <span>{item.patient_name}</span>
+                                        <a href={item.recipe_url} target="_blank" rel="noreferrer" className="hover:underline hover:text-primary font-bold">
+                                            Ver
                                         </a>
                                     </li>
                                 ))}
