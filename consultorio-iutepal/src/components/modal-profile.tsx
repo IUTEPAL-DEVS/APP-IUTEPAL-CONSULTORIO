@@ -43,8 +43,8 @@ const FormSchema = z.object({
 
 export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children, title, onUpdate, isName, isPhone, isApellidoPaterno, isApellidoMaterno, isUsername, isImage }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [error, setError] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -70,6 +70,7 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
 
 
     async function onSubmit(data: z.infer<typeof FormSchema>) {
+        setIsUpdating(true);
         const response = await fetch('/api/usuario', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -82,6 +83,7 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
                 description: "Los datos han sido actualizados correctamente.",
             });
             onUpdate(); // Refresca los datos del usuario en page.tsx
+            setOpen(false); // Cierra el modal
         } else {
             toast({
                 title: "Error",
@@ -90,7 +92,7 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
         }
     }
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
@@ -186,7 +188,7 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
                                     <FormItem>
                                         <FormLabel>Subir Imagen</FormLabel>
                                         <FormControl>
-                                            <Input type="file" defaultValue={user?.avatar_url} {...field} />
+                                            <Input type="file" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -194,24 +196,12 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({ children
                             />
                         )}
                         <DialogFooter className="sm:justify-end">
-                            <Button type="submit">Actualizar</Button>
-                        </DialogFooter>
+              <Button type="submit" disabled={isUpdating}>
+                {isUpdating ? "Actualizando..." : "Actualizar"}
+              </Button>
+            </DialogFooter>
                     </form>
                 </Form>
-                <ErrorModal
-                    messageBody={
-                        'Hubo un error al guardar al actualizar.'
-                    }
-                    title="Error al enviar la solicitud"
-                    isError={error}
-                    setIsError={setError}
-                />
-                <SuccessModal
-                    title="Solicitud enviada con éxito"
-                    messageBody="Datos actualizados exitosamente!"
-                    isSuccess={success}
-                    setIsSuccess={setSuccess}
-                />
             </DialogContent>
         </Dialog>
     );

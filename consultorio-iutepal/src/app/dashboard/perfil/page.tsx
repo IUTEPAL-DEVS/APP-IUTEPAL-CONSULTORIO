@@ -28,7 +28,7 @@ export default function Page() {
             <div className="flex my-5">
                 <ProfileUpdateModal title="Editar Imagen de perfil" isImage onUpdate={fetchUser}>
                     {loading ? (
-                        <Skeleton className="size-60 rounded-full" />
+                        <Skeleton className="size-60 rounded-full bg-sky-100" />
                     ) : (
                         <Avatar className="size-60 cursor-pointer">
                             <AvatarImage src={user?.avatar_url} alt="Avatar" />
@@ -38,25 +38,25 @@ export default function Page() {
                 </ProfileUpdateModal>
                 <div className="m-4">
                     <h2 className="text-3xl">
-                        {loading ? <Skeleton className="w-[200px] h-[30px] rounded-full" /> : (user?.username || "NOMBRE DE USUARIO")}
+                        {loading ? <Skeleton className="w-[200px] h-[30px] rounded-full bg-sky-100" /> : (user?.username || "NOMBRE DE USUARIO")}
                     </h2>
                     <h3>
-                        {loading ? <Skeleton className="w-[250px] h-[20px] rounded-full mt-3" /> : user?.email}
+                        {loading ? <Skeleton className="w-[250px] h-[20px] rounded-full mt-3 bg-sky-100" /> : user?.email}
                     </h3>
                 </div>
             </div>
             <h2>
-                {loading ? <Skeleton className="w-[200px] h-[30px] rounded-full" /> : "Datos personales"}
+                {loading ? <Skeleton className="w-[200px] h-[30px] bg-sky-100" /> : "Datos personales"}
             </h2>
-            <div className="grid grid-cols-3 space-y-4 my-5">
-                <div className="grid w-full max-w-sm items-center gap-1.5">
+            <div className="grid grid-cols-3 gap-4 space-y-4 my-5">
+                <div className="grid w-full max-w-sm items-center gap-1.5 mt-3">
                     <Label htmlFor="name">
-                        {loading ? <Skeleton className="w-[100px] h-[20px] rounded-full" /> : "Nombre(s)"}
+                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full bg-sky-100" /> : "Nombre(s)"}
                     </Label>
                     <ProfileUpdateModal title="Editar Nombre" isName onUpdate={fetchUser}>
                         <div className="relative">
                             {loading ? (
-                                <Skeleton className="w-full h-[40px] rounded-full" />
+                                <Skeleton className="w-full h-[40px] rounded-full bg-sky-100" />
                             ) : (
                                 <>
                                     <Input type="text" id="name" placeholder="Nombre" readOnly value={user?.name || ""} className="pl-10" />
@@ -68,12 +68,12 @@ export default function Page() {
                 </div>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="apellido_p">
-                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full" /> : "Apellido Paterno"}
+                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full bg-sky-100" /> : "Apellido Paterno"}
                     </Label>
                     <ProfileUpdateModal title="Editar Apellido Paterno" isApellidoPaterno onUpdate={fetchUser}>
                         <div className="relative">
                             {loading ? (
-                                <Skeleton className="w-full h-[40px] rounded-full" />
+                                <Skeleton className="w-full h-[40px] rounded-full bg-sky-100" />
                             ) : (
                                 <>
                                     <Input type="text" id="apellido_p" placeholder="Apellido Paterno" readOnly value={user?.apellido_p || ""} className="pl-10" />
@@ -85,12 +85,12 @@ export default function Page() {
                 </div>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="apellido_m">
-                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full" /> : "Apellido Materno"}
+                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full bg-sky-100" /> : "Apellido Materno"}
                     </Label>
                     <ProfileUpdateModal title="Editar Apellido Materno" isApellidoMaterno onUpdate={fetchUser}>
                         <div className="relative">
                             {loading ? (
-                                <Skeleton className="w-full h-[40px] rounded-full" />
+                                <Skeleton className="w-full h-[40px] rounded-full bg-sky-100" />
                             ) : (
                                 <>
                                     <Input type="text" id="apellido_m" placeholder="Apellido Materno" readOnly value={user?.apellido_m || ""} className="pl-10" />
@@ -102,12 +102,12 @@ export default function Page() {
                 </div>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="user_id">
-                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full" /> : "Nombre de Usuario"}
+                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full bg-sky-100" /> : "Nombre de Usuario"}
                     </Label>
                     <ProfileUpdateModal title="Editar Username" isUsername onUpdate={fetchUser}>
                         <div className="relative">
                             {loading ? (
-                                <Skeleton className="w-full h-[40px] rounded-full" />
+                                <Skeleton className="w-full h-[40px] rounded-full bg-sky-100" />
                             ) : (
                                 <>
                                     <Input type="text" id="username" placeholder="Username" readOnly value={user?.username || ""} className="pl-10" />
@@ -119,22 +119,22 @@ export default function Page() {
                 </div>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email">
-                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full" /> : "Correo electrónico"}
+                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full bg-sky-100" /> : "Correo electrónico"}
                     </Label>
                     {loading ? (
-                        <Skeleton className="w-full h-[40px] rounded-full" />
+                        <Skeleton className="w-full h-[40px] rounded-full bg-sky-100" />
                     ) : (
                         <Input type="email" id="email" placeholder="Email" disabled value={user?.email || ""} />
                     )}
                 </div>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="phone">
-                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full" /> : "Teléfono"}
+                        {loading ? <Skeleton className="w-[150px] h-[20px] rounded-full bg-sky-100" /> : "Teléfono"}
                     </Label>
                     <ProfileUpdateModal title="Editar Número Telefónico" isPhone onUpdate={fetchUser}>
                         <div className="relative">
                             {loading ? (
-                                <Skeleton className="w-full h-[40px] rounded-full" />
+                                <Skeleton className="w-full h-[40px] rounded-full bg-sky-100" />
                             ) : (
                                 <>
                                     <Input type="text" id="phone" placeholder="Teléfono" readOnly value={user?.phone || ""} className="pl-10" />
