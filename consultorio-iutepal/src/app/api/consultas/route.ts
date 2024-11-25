@@ -31,9 +31,9 @@ export async function POST(req: NextRequest) {
     cookies: () => cookieStore,
   });
 
-  const patientData = await req.json();
+  const { patient_id, ...consultationData } = await req.json();
 
-  const { data, error } = await supabase.from('consultation').insert([patientData]);
+  const { data, error } = await supabase.from('consultation').insert([{ ...consultationData, patient_id }]);
 
   if (error) {
     console.log('Error en POST:', error.message);

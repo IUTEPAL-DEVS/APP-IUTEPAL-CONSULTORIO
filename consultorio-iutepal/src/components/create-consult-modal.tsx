@@ -101,7 +101,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ cedula: id, ...payload }),
+        body: JSON.stringify({ ...payload }),
       });
 
       if (!response.ok) {
