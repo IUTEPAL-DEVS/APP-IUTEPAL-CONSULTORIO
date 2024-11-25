@@ -22,9 +22,9 @@ import { Checkbox } from './ui/checkbox';
 import { Textarea } from './ui/textarea';
 import { cn } from '../lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
-import { languages } from '@/utils/patologia';
+import { usePathologies } from '../hooks/use-pathologies';
 
 interface ConsultCreateModalProps {
   children: React.ReactNode;
@@ -52,6 +52,7 @@ const FormSchema = z.object({
 
 export function ConsultCreateModal({ children, id, title, sub, onRefresh }: ConsultCreateModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { pathologies }: { pathologies: { id: string; name: string }[] } = usePathologies();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -196,7 +197,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
               name="pathology"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Patologia</FormLabel>
+                  <FormLabel>Patología</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -206,7 +207,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                           className={cn('w-full justify-between', !field.value && 'text-muted-foreground')}
                         >
                           {field.value
-                            ? languages.find((language) => language.value === field.value)?.label
+                            ? pathologies.find((pathology) => pathology.id === field.value)?.name
                             : 'Seleccione'}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
@@ -214,25 +215,19 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                     </PopoverTrigger>
                     <PopoverContent className="w-[200px] p-0">
                       <Command>
-                        <CommandInput placeholder="Search language..." />
+                        <CommandInput placeholder="Buscar patología..." />
                         <CommandList>
-                          <CommandEmpty>No se encuentran patologias.</CommandEmpty>
+                          <CommandEmpty>No se encuentran patologías.</CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {pathologies.map((pathology) => (
                               <CommandItem
-                                value={language.label}
-                                key={language.value}
+                                value={pathology.name}
+                                key={pathology.id}
                                 onSelect={() => {
-                                  form.setValue('pathology', language.value);
+                                  form.setValue('pathology', pathology.id);
                                 }}
                               >
-                                <Check
-                                  className={cn(
-                                    'mr-2 h-4 w-4',
-                                    language.value === field.value ? 'opacity-100' : 'opacity-0'
-                                  )}
-                                />
-                                {language.label}
+                                {pathology.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
