@@ -1,6 +1,6 @@
 'use client';
 
-import { optional, z } from 'zod';
+import { z } from 'zod';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -16,19 +16,9 @@ import { Input } from './ui/input';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '../hooks/use-toast';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { format } from 'date-fns';
-import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
-import { cn } from '../lib/utils';
 import { useEffect, useState } from 'react';
-import { Checkbox } from './ui/checkbox';
-import { Calendar } from './ui/calendar';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { languages } from '@/utils/patologia';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
-import { Textarea } from './ui/textarea';
-import { ErrorModal } from './send-error-modal';
-import { SuccessModal } from './send-success-modal';
 import { DatePicker } from './date-picker';
 
 interface PatientsCreateModalProps {
@@ -60,8 +50,6 @@ const FormSchema = z.object({
 
 export function PatientsCreateModal({ children, id, title, sub, onRefresh }: PatientsCreateModalProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isError, setIsError] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -77,9 +65,9 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
         form.reset({
           id: patient.id.toString(),
           firts_name: patient.firts_name,
-          second_name: patient.second_name,
+          second_name: patient.second_name || '',
           last_name: patient.last_name,
-          second_last_name: patient.second_last_name,
+          second_last_name: patient.second_last_name || '',
           dob: new Date(patient.dob),
           charge: patient.charge,
           direction: patient.direction,
@@ -95,8 +83,6 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
-    setIsSuccess(false);
-    setIsError(false);
 
     try {
       const payload = {
@@ -120,17 +106,18 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
           title: 'Error',
           description: errorData.error,
         });
-        setIsError(true);
         return;
       }
 
       const result = await response.json();
       console.log(result);
-      setIsSuccess(true);
+      toast({
+        title: 'Éxito',
+        description: 'Paciente guardado correctamente.',
+      });
       onRefresh();
     } catch (error) {
       console.error(error);
-      setIsError(true);
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +126,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="overflow-y-scroll sm:h-2/3 sm:max-w-3xl lg:h-5/6">
+      <DialogContent className="overflow-y-scroll sm:h-2/3 sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="text-xl">{title}</DialogTitle>
           <DialogDescription>
@@ -281,7 +268,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Fecha de Nacimiento</FormLabel>
-                    <DatePicker {...field} />
+                    <DatePicker onChange={field.onChange} value={field.value} />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -559,7 +546,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? 'Guardando...' : 'Guardar'}
               </Button>
-            </DialogFooter>            
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>

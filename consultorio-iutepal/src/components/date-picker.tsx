@@ -1,14 +1,13 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { format, getMonth, getYear, setMonth, setYear } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Button } from "./ui/button";
-import { cn } from "../lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Calendar } from "./ui/calendar";
-
+import * as React from 'react';
+import { format, getMonth, getYear, setMonth, setYear } from 'date-fns';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Button } from './ui/button';
+import { cn } from '../lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Calendar } from './ui/calendar';
 
 interface DatePickerProps {
   startYear?: number;
@@ -16,11 +15,12 @@ interface DatePickerProps {
   value: Date | undefined;
   onChange: (date: Date | undefined) => void;
 }
+
 export function DatePicker({
   startYear = getYear(new Date()) - 100,
   endYear = getYear(new Date()) + 100,
+  onChange,
 }: DatePickerProps) {
-
   const [date, setDate] = React.useState<Date>(new Date());
 
   const months = [
@@ -37,66 +37,61 @@ export function DatePicker({
     'November',
     'December',
   ];
-  const years = Array.from(
-    { length: endYear - startYear + 1 },
-    (_, i) => startYear + i
-  );
+  const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
 
   const handleMonthChange = (month: string) => {
     const newDate = setMonth(date, months.indexOf(month));
     setDate(newDate);
-  }
+    onChange(newDate);
+  };
 
   const handleYearChange = (year: string) => {
     const newDate = setYear(date, parseInt(year));
-    setDate(newDate)
-  }
+    setDate(newDate);
+    onChange(newDate);
+  };
 
   const handleSelect = (selectedData: Date | undefined) => {
     if (selectedData) {
-      setDate(selectedData)
+      setDate(selectedData);
+      onChange(selectedData);
     }
-  }
+  };
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant={"outline"}
-          className={cn(
-            "w-full justify-start text-left font-normal",
-            !date && "text-muted-foreground"
-          )}
+          variant={'outline'}
+          className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          {date ? format(date, 'PPP') : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <div className="flex justify-between p-2">
-          <Select
-            onValueChange={handleMonthChange}
-            value={months[getMonth(date)]}
-          >
+          <Select onValueChange={handleMonthChange} value={months[getMonth(date)]}>
             <SelectTrigger className="w-[110px]">
               <SelectValue placeholder="Month" />
             </SelectTrigger>
             <SelectContent>
-              {months.map(month => (
-                <SelectItem key={month} value={month}>{month}</SelectItem>
+              {months.map((month) => (
+                <SelectItem key={month} value={month}>
+                  {month}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select
-            onValueChange={handleYearChange}
-            value={getYear(date).toString()}
-          >
+          <Select onValueChange={handleYearChange} value={getYear(date).toString()}>
             <SelectTrigger className="w-[110px]">
               <SelectValue placeholder="Year" />
             </SelectTrigger>
             <SelectContent>
-              {years.map(year => (
-                <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+              {years.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -112,5 +107,5 @@ export function DatePicker({
         />
       </PopoverContent>
     </Popover>
-  )
+  );
 }

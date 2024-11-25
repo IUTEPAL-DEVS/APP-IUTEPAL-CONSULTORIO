@@ -2,18 +2,17 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Manejar las solicitudes GET, POST, PUT y DELETE
 export async function GET(req: NextRequest) {
   const cookieStore = cookies();
   const supabase = createRouteHandlerClient({
     cookies: () => cookieStore,
   });
 
-  const cedula = req.nextUrl.searchParams.get('id');
-  let query = supabase.from('patient').select('*');
+  const id_patient = req.nextUrl.searchParams.get('patient_id');
+  let query = supabase.from('consultation').select('*');
 
-  if (cedula) {
-    query = query.eq('id', cedula);
+  if (id_patient) {
+    query = query.eq('patient_id', id_patient);
   }
 
   const { data, error } = await query;
@@ -34,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   const patientData = await req.json();
 
-  const { data, error } = await supabase.from('patient').insert([patientData]);
+  const { data, error } = await supabase.from('consultation').insert([patientData]);
 
   if (error) {
     console.log('Error en POST:', error.message);
@@ -50,30 +49,13 @@ export async function PUT(req: NextRequest) {
     cookies: () => cookieStore,
   });
 
-  const { cedula, ...patientData } = await req.json();
+  const id = req.nextUrl.searchParams.get('id');
+  const patientData = await req.json();
 
-  const { data, error } = await supabase.from('patient').update(patientData).eq('id', cedula);
+  const { data, error } = await supabase.from('consultation').update(patientData).match({ id });
 
   if (error) {
     console.log('Error en PUT:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
-
-  return NextResponse.json({ data });
-}
-
-export async function DELETE(req: NextRequest) {
-  const cookieStore = cookies();
-  const supabase = createRouteHandlerClient({
-    cookies: () => cookieStore,
-  });
-
-  const { cedula } = await req.json();
-
-  const { data, error } = await supabase.from('patient').delete().eq('id', cedula);
-
-  if (error) {
-    console.log('Error en DELETE:', error.message);
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 

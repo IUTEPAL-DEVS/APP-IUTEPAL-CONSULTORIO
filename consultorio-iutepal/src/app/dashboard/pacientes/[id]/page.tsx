@@ -1,9 +1,9 @@
-import { DataTablePatienConsult } from "./data-table";
+import { DataTablePatienConsult } from './data-table';
 
 export default function Page() {
-    return (
-        <section>
-            <DataTablePatienConsult />
-        </section>
-    );
-    }
+  return (
+    <section>
+      <DataTablePatienConsult />
+    </section>
+  );
+}
