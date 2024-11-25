@@ -8,7 +8,7 @@ export function usePathologies() {
   useEffect(() => {
     async function fetchPathologies() {
       try {
-        const response = await fetch('/api/pathologies');
+        const response = await fetch('/api/patologias');
         const result = await response.json();
         if (response.ok) {
           setPathologies(result.pathologies);

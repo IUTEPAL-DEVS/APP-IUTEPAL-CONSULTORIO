@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
   });
 
   const { data: pathologies, error } = await supabase.from('pathologies').select('*');
+  console.log('pathologies', pathologies);
 
   if (error) {
     console.log('Error en GET:', error.message);
