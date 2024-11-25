@@ -1,93 +1,61 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Checkbox } from "@/src/components/ui/checkbox"
 import { Button } from "@/src/components/ui/button"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/src/components/ui/dropdown-menu"
-import { Patients } from "@/src/types/patient"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/src/components/ui/dropdown-menu"
 import { ViewPatients } from "@/src/components/view-patients"
 import { PatientsCreateModal } from "@/src/components/create-patients-modal"
-import { DeletePatientModal } from "@/src/components/delete-patient-modal"
-import Link from "next/link"
+import { ConsultData } from "@/src/types/consult-data"
 
-export function columns(handleRefresh: () => void): ColumnDef<Patients>[] {
+
+export function columns(handleRefresh: () => void): ColumnDef<ConsultData>[] {
     return [
         {
-            accessorKey: "id",
+            accessorKey: "date",
             header: ({ column }) => {
                 return (
                     <Button
                         variant="ghost"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     >
-                        Cedula
+                        Fecha de Consulta
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                 )
             },
-            cell: ({ row }) => <div className="lowercase">{row.getValue("id")}</div>,
+            cell: ({ row }) => <div className="lowercase">{row.getValue("date")}</div>,
         },
         {
-            accessorKey: "firts_name",
+            accessorKey: "query_reason",
             header: ({ column }) => {
                 return (
                     <Button
                         variant="ghost"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     >
-                        Nombre
+                        Motivo de Consulta
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                 )
             },
-            cell: ({ row }) => <div className="capitalize">{row.getValue("firts_name")}</div>,
+            cell: ({ row }) => <div className="capitalize">{row.getValue("query_reason")}</div>,
         },
         {
-            accessorKey: "last_name",
+            accessorKey: "diagnosis",
             header: ({ column }) => {
                 return (
                     <Button
                         variant="ghost"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     >
-                        Apellido
+                        Diagnostico
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                 )
             },
-            cell: ({ row }) => <div className="capitalize">{row.getValue("last_name")}</div>,
-        },
-        {
-            accessorKey: "dob",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    >
-                        Fecha de Nacimiento
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                )
-            },
-            cell: ({ row }) => <div className="lowercase">{row.getValue("dob")}</div>,
-        },
-        {
-            accessorKey: "charge",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    >
-                        Cargo
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                )
-            },
-            cell: ({ row }) => <div className="capitalize">{row.getValue("charge")}</div>,
-        },        
+            cell: ({ row }) => <div className="capitalize">{row.getValue("diagnosis")}</div>,
+        },                        
         {
             id: "actions",
             enableHiding: false,
@@ -103,21 +71,16 @@ export function columns(handleRefresh: () => void): ColumnDef<Patients>[] {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() => navigator.clipboard.writeText(patient.id)}
-                            >
-                                Copiar Cedula
-                            </DropdownMenuItem>
+                            <DropdownMenuLabel>Acciones</DropdownMenuLabel>                            
                             <DropdownMenuSeparator />
 
                             <div className="flex flex-col gap-y-2">
                                 <Button variant={"ghost"}>
-                                        <Link href={`/dashboard/pacientes/${patient.id}`} passHref>
+                                    <ViewPatients id={patient.id}>
                                         <p>
-                                            Ver Consultas
+                                            Ver Datos completos 
                                         </p>
-                                        </Link>
+                                    </ViewPatients>
                                 </Button>
                                 <Button variant={"ghost"}>
                                     <PatientsCreateModal onRefresh={handleRefresh} sub="modificacion de un" id={patient.id} title="Modificar datos del paciente">

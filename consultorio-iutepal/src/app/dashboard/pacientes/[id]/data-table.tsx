@@ -31,9 +31,8 @@ import {
 } from "@/src/components/ui/table"
 import { Skeleton } from "@/src/components/ui/skeleton"
 import { columns } from "./columns"
-import { PatientsCreateModal } from "@/src/components/create-patients-modal"
 
-export function DataTablePatiens() {
+export function DataTablePatienConsult() {
     const [data, setData] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -45,18 +44,7 @@ export function DataTablePatiens() {
 
     const handleRefresh = () => {
         setRefresh(!refresh);
-    };
-
-    React.useEffect(() => {
-        async function fetchData() {
-            setLoading(true);
-            const response = await fetch('/api/pacientes');
-            const result = await response.json();
-            setData(result.data);
-            setLoading(false);
-        }
-        fetchData();
-    }, [refresh]);
+    };    
 
     const table = useReactTable({
         data: data,
@@ -117,9 +105,9 @@ export function DataTablePatiens() {
                                 })}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <PatientsCreateModal sub="creacion de un nuevo" title="Crear paciente nuevo" onRefresh={handleRefresh}>
-                        <Button className="ml-5">Agregar Paciente</Button>
-                    </PatientsCreateModal>
+                    
+                        <Button className="ml-5">Agregar Nueva Consulta</Button>
+                    
                 </div>
             )}
 
@@ -169,7 +157,7 @@ export function DataTablePatiens() {
                                         colSpan={columns.length}
                                         className="h-24 text-center"
                                     >
-                                        No existen pacientes registrados.
+                                        No se encuentra ninguna consulta registrada.
                                     </TableCell>
                                 </TableRow>
                             )}
