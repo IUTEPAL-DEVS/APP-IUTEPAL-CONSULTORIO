@@ -32,13 +32,13 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
           <div className="flex w-full justify-end">
             {href ? (
               <Link href={href}>
-                <Button className="font-bold  text-white" onClick={() => setIsSuccess(false)}>
+                <Button className="font-bold text-white" onClick={() => setIsSuccess(false)}>
                   Aceptar
                 </Button>
               </Link>
             ) : (
               <Button
-                className="font-bold text-white bg-green-800 hover:bg-green-700"
+                className="bg-green-800 font-bold text-white hover:bg-green-700"
                 onClick={() => {
                   setIsSuccess(false);
                   if (onClickAccept) {

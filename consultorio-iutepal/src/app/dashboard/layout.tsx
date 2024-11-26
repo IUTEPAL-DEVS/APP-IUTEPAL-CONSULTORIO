@@ -1,16 +1,16 @@
-'use client'
-import RealTimeDate from "@/src/components/datetime";
-import IconNotification from "@/src/components/icon-notification";
-import NavMobile from "@/src/components/nav-mobile";
-import { ProfileDropdown } from "@/src/components/profile-dropdown";
-import SideNav from "@/src/components/side-nav";
-import { Separator } from "@/src/components/ui/separator";
-import { links } from "@/src/lib/routes";
-import { usePathname } from "next/navigation";
+'use client';
+import RealTimeDate from '@/src/components/datetime';
+import IconNotification from '@/src/components/icon-notification';
+import NavMobile from '@/src/components/nav-mobile';
+import { ProfileDropdown } from '@/src/components/profile-dropdown';
+import SideNav from '@/src/components/side-nav';
+import { Separator } from '@/src/components/ui/separator';
+import { links } from '@/src/lib/routes';
+import { usePathname } from 'next/navigation';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const currentLink = links.find(link => link.href === pathname);
+  const currentLink = links.find((link) => link.href === pathname);
   const pageTitle = currentLink ? currentLink.name : 'Dashboard';
   return (
     <>
@@ -23,22 +23,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Mobile sidebar */}
           <NavMobile />
 
-          <Separator
-            className="h-6 w-px bg-gray-900/10 lg:hidden"
-            aria-hidden="true"
-          />
+          <Separator className="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true" />
 
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-            <h2 className="font-semibold text-2xl mt-4 flex-1">{pageTitle}</h2>
+            <h2 className="mt-4 flex-1 text-2xl font-semibold">{pageTitle}</h2>
             <RealTimeDate />
             <div className="flex items-center gap-x-4 lg:gap-x-6">
+              {/* <IconNotification /> */}
 
-              <IconNotification />
-
-              <Separator
-                className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10"
-                aria-hidden="true"
-              />
+              <Separator className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" aria-hidden="true" />
 
               {/* Profile dropdown */}
               <ProfileDropdown />

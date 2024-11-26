@@ -1,8 +1,4 @@
-import {
-  Bolt,
-  LogOut,
-  UserIcon,
-} from "lucide-react"
+import { Bolt, LogOut, UserIcon } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -12,18 +8,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { User } from "../types/user"
+} from '@/src/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { User } from '../types/user';
 
 export function ProfileDropdown() {
   const [user, setUser] = useState<User | null>(null);
 
   const router = useRouter();
-
 
   const fetchUser = async () => {
     const response = await fetch('/api/usuario');
@@ -85,5 +80,5 @@ export function ProfileDropdown() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

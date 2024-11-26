@@ -1,20 +1,20 @@
-import { BarChart, CalendarIcon, FileTextIcon, HomeIcon, UsersIcon, WalletIcon } from "lucide-react";
+import { BarChart, CalendarIcon, FileTextIcon, HomeIcon, UsersIcon, WalletIcon } from 'lucide-react';
 
 // Depending on the size of the application, this would be stored in a database.
 export const links = [
-    { name: "Inicio", href: "/dashboard", icon: HomeIcon },
-    { name: "Pacientes", href: "/dashboard/pacientes", icon: UsersIcon },
-    {
-      name: "Calendario",
-      href: "/dashboard/calendario",
-      icon: CalendarIcon, 
-    },
-    {
-      name: "Reposos",
-      href: "/dashboard/reposos",
-      icon: FileTextIcon,
-    },
-    { name: "Reportes", href: "/dashboard/reportes", icon: BarChart },
-    { name: "Inventario", href: "/dashboard/inventario", icon: WalletIcon },
-    { name: "Perfil", href: "/dashboard/perfil", icon: UsersIcon },
-  ];
+  { name: 'Inicio', href: '/dashboard', icon: HomeIcon },
+  { name: 'Pacientes', href: '/dashboard/pacientes', icon: UsersIcon },
+  {
+    name: 'Calendario',
+    href: '/dashboard/calendario',
+    icon: CalendarIcon,
+  },
+  {
+    name: 'Reposos',
+    href: '/dashboard/reposos',
+    icon: FileTextIcon,
+  },
+  // { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart },
+  // { name: 'Inventario', href: '/dashboard/inventario', icon: WalletIcon },
+  { name: 'Perfil', href: '/dashboard/perfil', icon: UsersIcon },
+];

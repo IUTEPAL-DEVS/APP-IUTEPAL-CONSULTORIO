@@ -15,14 +15,14 @@ export const ErrorModal: React.FC<ErrorModalProps> = ({ title, messageBody, isEr
   return (
     <Dialog open={isError} onOpenChange={setIsError}>
       {isError && (
-        <DialogContent className="max-h-auto h-auto max-w-[700px] rounded-3xl  ">
+        <DialogContent className="max-h-auto h-auto max-w-[700px] rounded-3xl">
           <DialogHeader>
-            <DialogTitle className=" text-3xl font-bold text-destructive">{title}</DialogTitle>
+            <DialogTitle className="text-3xl font-bold text-destructive">{title}</DialogTitle>
             <Separator />
           </DialogHeader>
           <div className="mt-1">{messageBody && <p className="mb-6 text-xl text-destructive">{messageBody}</p>}</div>
-          <div className="flex w-full justify-end ">
-            <Button className=" font-bold text-white" onClick={() => setIsError(false)}>
+          <div className="flex w-full justify-end">
+            <Button className="font-bold text-white" onClick={() => setIsError(false)}>
               Aceptar
             </Button>
           </div>
