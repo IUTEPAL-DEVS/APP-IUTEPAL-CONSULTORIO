@@ -17,3 +17,26 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ data });
 }
+
+export async function POST(req: NextRequest) {
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient({
+    cookies: () => cookieStore,
+  });
+
+  const { recipe_url, patient_name } = await req.json();
+
+  const { data, error } = await supabase
+    .from('recipe')
+    .insert([
+      { recipe_url, patient_name },
+    ])
+    .select();
+
+  if (error) {
+    console.log('Error en POST:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(data[0]);
+}
