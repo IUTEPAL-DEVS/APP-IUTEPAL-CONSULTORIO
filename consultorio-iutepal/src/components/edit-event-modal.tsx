@@ -10,7 +10,7 @@ interface Event {
     id?: string
     id_patient?: string
     title: string
-    date: Date
+    date_time: Date
     time: string
     description?: string
 }

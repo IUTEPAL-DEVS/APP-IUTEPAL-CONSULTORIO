@@ -12,12 +12,13 @@ import { Label } from "@/src/components/ui/label"
 import { ScrollArea } from "@/src/components/ui/scroll-area"
 import { EditEventModal } from "@/src/components/edit-event-modal"
 import { DeleteEventModal } from "@/src/components/delete-event-modal"
+import { toast } from "@/src/hooks/use-toast"
 
 interface Event {
     id?: string
     id_patient?: string
     title: string
-    date: Date
+    date_time: Date
     time: string
     description?: string
 }
@@ -51,7 +52,7 @@ export default function ExpandedCalendar() {
             setIsLoading(true)
             const newEvent: Omit<Event, 'id'> = {
                 title: newEventTitle,
-                date: date,
+                date_time: date,
                 time: newEventTime,
                 description: newEventDescription,
                 id_patient: undefined,
@@ -72,6 +73,10 @@ export default function ExpandedCalendar() {
             setNewEventDescription("")
             setIsLoading(false)
             fetchEvents()
+            toast({
+                title: "Éxito",
+                description: "Evento añadido exitosamente",
+            })
         }
     }
 
@@ -90,6 +95,10 @@ export default function ExpandedCalendar() {
         } else {
             console.error("Failed to delete event")
         }
+        toast({
+            title: "Éxito",
+            description: "Evento eliminado exitosamente",
+        })
         setIsLoading(false)
     }
 
@@ -117,7 +126,7 @@ export default function ExpandedCalendar() {
     }
 
     const filteredEvents = events.filter(event =>
-        date && new Date(event.date).toDateString() === date.toDateString()
+        date && new Date(event.date_time).toDateString() === date.toDateString()
     )
 
     return (
@@ -134,7 +143,7 @@ export default function ExpandedCalendar() {
             />
             <Card className="flex-1 shadow">
                 <CardHeader>
-                    <CardTitle>Evento para {date ? format(date, "dd 'de' MMMM 'de' yyyy", { locale: es }) : "seleccione fecha"}</CardTitle>
+                    <CardTitle>Evento para el {date ? format(date, "dd 'de' MMMM 'del' yyyy", { locale: es }) : "seleccione fecha"}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <ScrollArea className="h-[250px]">
@@ -142,7 +151,7 @@ export default function ExpandedCalendar() {
                             <ul className="space-y-2">
                                 {filteredEvents.map((event) => (
                                     <li key={event.id} className="bg-secondary p-2 rounded-md flex items-center">
-                                        Titulo del evento: <span className="text-primary font-semibold">{event.title}</span> - Descripcion: <span className="text-primary font-semibold">{event.description}</span> - Hora estimada de la cita: <span className="text-primary font-semibold">{formatTime(event.time)}</span>
+                                        Titulo del evento: <span className="text-primary font-semibold mx-2">{event.title}</span> - Descripcion: <span className="text-primary font-semibold mx-2"> {event.description}</span> - Hora estimada de la cita: <span className="text-primary font-semibold mx-2"> {formatTime(event.time)}</span>
                                         <div className="gap-4 flex items-center ml-auto -mt-2">
                                             <EditEventModal event={event} onSave={editEvent} onClose={() => { }}>
                                                 <Button variant={"ghost"} className="mt-2 p-0"><Pencil /></Button>
@@ -191,7 +200,7 @@ export default function ExpandedCalendar() {
                     </div>
                     <Button
                         onClick={addEvent}
-                        className="mt-2"
+                        className="mt-6"
                         disabled={isLoading || !newEventTitle.trim() || !newEventTime.trim() || !newEventDescription.trim()}
                     >
                         {isLoading ? "Creando..." : <><Plus className="mr-2 h-4 w-4" /> Añadir</>}

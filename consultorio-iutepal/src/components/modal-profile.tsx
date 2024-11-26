@@ -17,8 +17,6 @@ import { toast } from "../hooks/use-toast"
 import { useForm } from "react-hook-form"
 import { useEffect, useState } from "react"
 import { User } from "../types/user"
-import { ErrorModal } from "./send-error-modal"
-import { SuccessModal } from "./send-success-modal"
 
 interface ProfileUpdateModalProps {
     children: React.ReactNode;
