@@ -16,7 +16,7 @@ import { Input } from './ui/input';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '../hooks/use-toast';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Checkbox } from './ui/checkbox';
 import { Textarea } from './ui/textarea';
@@ -25,6 +25,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { ChevronsUpDown } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
 import { usePathologies } from '../hooks/use-pathologies';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface ConsultCreateModalProps {
   children: React.ReactNode;
@@ -35,10 +36,10 @@ interface ConsultCreateModalProps {
 }
 
 const FormSchema = z.object({
-  height: z.string(),
-  weight: z.string(),
+  height: z.number(),
+  weight: z.number(),
   blood_type: z.string(),
-  temperature: z.string(),
+  temperature: z.number(),
   pathology: z.number(),
   reason_consultation: z.string(),
   diagnosis: z.string(),
@@ -52,14 +53,47 @@ const FormSchema = z.object({
 
 export function ConsultCreateModal({ children, id, title, sub, onRefresh }: ConsultCreateModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [unit, setUnit] = useState('cm');
+  const [hasReposo, setHasReposo] = useState(false);
+  const [weightUnit, setWeightUnit] = useState('kg');
+  const [temperatureUnit, setTemperatureUnit] = useState('celsius');
+
   const { pathologies }: { pathologies: { id: string; name: string }[] } = usePathologies();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {},
+    defaultValues: {
+      height: 0,
+      weight: 0,
+      temperature: 0,
+    },
   });
 
-  const [hasReposo, setHasReposo] = useState(false);
+  const handleHeightChange = (value: string) => {
+    let heightInCm = parseFloat(value);
+    if (unit === 'm') {
+      heightInCm = heightInCm * 100; // Convertir metros a centímetros
+    }
+    form.setValue('height', heightInCm);
+  };
+
+  const handleWeightChange = (value: string) => {
+    let weightInKg = parseFloat(value);
+    if (weightUnit === 'g') {
+      weightInKg = weightInKg / 1000; // Convertir gramos a kilogramos
+    }
+    form.setValue('weight', weightInKg);
+  };
+
+  const handleTemperatureChange = (value: string) => {
+    let temperature = parseFloat(value);
+    if (temperatureUnit === 'fahrenheit') {
+      temperature = (temperature - 32) * (5 / 9); // Convertir Fahrenheit a Celsius
+    } else if (temperatureUnit === 'kelvin') {
+      temperature = temperature - 273.15; // Convertir Kelvin a Celsius
+    }
+    form.setValue('temperature', temperature);
+  };
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
@@ -113,105 +147,211 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="height"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Altura</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="weight"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Peso</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="blood_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo de Sangre</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="temperature"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Temperatura</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="pathology"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Patología</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
+            <div className="grid grid-cols-3 gap-3">
+              <FormField
+                control={form.control}
+                name="height"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Altura</FormLabel>
+                    <div className="flex items-center space-x-2">
                       <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn('w-full justify-between', !field.value && 'text-muted-foreground')}
-                        >
-                          {field.value
-                            ? pathologies.find((pathology) => pathology.id === field.value)?.name
-                            : 'Seleccione'}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
+                        <Input
+                          {...field}
+                          value={unit === 'm' ? (parseFloat(field.value) / 100).toFixed(2) : field.value}
+                          onChange={(e) => handleHeightChange(e.target.value)}
+                        />
                       </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Buscar patología..." />
-                        <CommandList>
-                          <CommandEmpty>No se encuentran patologías.</CommandEmpty>
-                          <CommandGroup>
-                            {pathologies.map((pathology) => (
-                              <CommandItem
-                                value={pathology.name}
-                                key={pathology.id}
-                                onSelect={() => {
-                                  form.setValue('pathology', pathology.id);
-                                }}
-                              >
-                                {pathology.name}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      <Select onValueChange={setUnit} value={unit}>
+                        <SelectTrigger className="w-20">
+                          <SelectValue placeholder="Unidad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cm">cm</SelectItem>
+                          <SelectItem value="m">m</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="weight"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Peso</FormLabel>
+                    <div className="flex items-center space-x-2">
+                      <FormControl>
+                        <Input
+                          {...field}
+                          value={weightUnit === 'g' ? (parseFloat(field.value) * 1000).toFixed(0) : field.value}
+                          onChange={(e) => handleWeightChange(e.target.value)}
+                        />
+                      </FormControl>
+                      <Select onValueChange={setWeightUnit} value={weightUnit}>
+                        <SelectTrigger className="w-20">
+                          <SelectValue placeholder="Unidad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="kg">kg</SelectItem>
+                          <SelectItem value="g">g</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="temperature"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Temperatura</FormLabel>
+                    <div className="flex items-center space-x-2">
+                      <FormControl>
+                        <Input
+                          {...field}
+                          value={
+                            temperatureUnit === 'fahrenheit'
+                              ? ((parseFloat(field.value) * 9) / 5 + 32).toFixed(2)
+                              : temperatureUnit === 'kelvin'
+                                ? (parseFloat(field.value) + 273.15).toFixed(2)
+                                : field.value
+                          }
+                          onChange={(e) => handleTemperatureChange(e.target.value)}
+                        />
+                      </FormControl>
+                      <Select onValueChange={setTemperatureUnit} value={temperatureUnit}>
+                        <SelectTrigger className="w-20">
+                          <SelectValue placeholder="Unidad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="celsius">°C</SelectItem>
+                          <SelectItem value="fahrenheit">°F</SelectItem>
+                          <SelectItem value="kelvin">K</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+                control={form.control}
+                name="blood_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Sangre</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+            <div className='grid grid-cols-2 gap-3'>
+            <FormField
+                control={form.control}
+                name="pathology"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sistema Patologia</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn('w-full justify-between', !field.value && 'text-muted-foreground')}
+                          >
+                            {field.value
+                              ? pathologies.find((pathology) => pathology.id === field.value)?.name
+                              : 'Seleccione'}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0">
+                        <Command>
+                          <CommandInput placeholder="Buscar patología..." />
+                          <CommandList>
+                            <CommandEmpty>No se encuentran patologías.</CommandEmpty>
+                            <CommandGroup>
+                              {pathologies.map((pathology) => (
+                                <CommandItem
+                                  value={pathology.name}
+                                  key={pathology.id}
+                                  onSelect={() => {
+                                    form.setValue('pathology', pathology.id);
+                                  }}
+                                >
+                                  {pathology.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="pathology"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Patología</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn('w-full justify-between', !field.value && 'text-muted-foreground')}
+                          >
+                            {field.value
+                              ? pathologies.find((pathology) => pathology.id === field.value)?.name
+                              : 'Seleccione'}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0">
+                        <Command>
+                          <CommandInput placeholder="Buscar patología..." />
+                          <CommandList>
+                            <CommandEmpty>No se encuentran patologías.</CommandEmpty>
+                            <CommandGroup>
+                              {pathologies.map((pathology) => (
+                                <CommandItem
+                                  value={pathology.name}
+                                  key={pathology.id}
+                                  onSelect={() => {
+                                    form.setValue('pathology', pathology.id);
+                                  }}
+                                >
+                                  {pathology.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               <FormField
                 control={form.control}

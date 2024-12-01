@@ -1,13 +1,16 @@
 export interface ConsultData {
-  query_reason: string;
-  diagnosis: string;
+  weight: number;
+  height: number;
   blood_type: string;
-  temperature: string;
+  temperature: number;
   pathology: string;
-  recipe_url: string;
-  clinical_history: boolean;
+  reason_consultation: string;
+  diagnosis: string;
+  medical_history: boolean;
   smoke: boolean;
   drink: boolean;
   allergic: boolean;
-  disability: boolean;
+  discapacity: boolean;
+  recipe_url: string;
+  pathology_system: string;
 }

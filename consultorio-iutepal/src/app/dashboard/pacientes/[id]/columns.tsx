@@ -10,10 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu';
-import { ViewPatients } from '@/src/components/view-patients';
-import { PatientsCreateModal } from '@/src/components/create-patients-modal';
 import { ConsultData } from '@/src/types/consult-data';
 import { formatDate } from '@/utils/form-date';
+import { ViewConsult } from '@/src/components/view-consult';
 
 export function columns(handleRefresh: () => void, id: string): ColumnDef<ConsultData>[] {
   return [
@@ -70,9 +69,11 @@ export function columns(handleRefresh: () => void, id: string): ColumnDef<Consul
               <DropdownMenuSeparator />
 
               <div className="flex flex-col gap-y-2">
-                <Button variant={'ghost'}>
-                  <p>Ver Datos completos</p>
-                </Button>
+                <ViewConsult id={id}>
+                  <Button variant={'ghost'}>
+                    <p>Ver Datos completos</p>
+                  </Button>
+                </ViewConsult>
                 <Button variant={'ghost'}>
                   <p>Modificar Datos</p>
                 </Button>
