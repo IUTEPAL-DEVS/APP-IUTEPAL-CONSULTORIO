@@ -26,9 +26,10 @@ import { Skeleton } from '@/src/components/ui/skeleton';
 import { columns } from './columns';
 import { ConsultCreateModal } from '@/src/components/create-consult-modal';
 import { useParams } from 'next/navigation';
+import { translateColumnId } from '@/src/lib/utils';
 
 export function DataTablePatienConsult() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -55,7 +56,7 @@ export function DataTablePatienConsult() {
 
   const table = useReactTable({
     data: data,
-    columns: columns(handleRefresh),
+    columns: columns(handleRefresh, id),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -104,13 +105,13 @@ export function DataTablePatienConsult() {
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     >
-                      {column.id}
+                      {translateColumnId(column.id)}
                     </DropdownMenuCheckboxItem>
                   );
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <ConsultCreateModal onRefresh={handleRefresh} title="Crear nueva consulta" sub="no se que es esto?">
+          <ConsultCreateModal id={id} onRefresh={handleRefresh} title="Crear nueva consulta" sub="no se que es esto?">
             <Button className="ml-5">Agregar Nueva Consulta</Button>
           </ConsultCreateModal>
         </div>

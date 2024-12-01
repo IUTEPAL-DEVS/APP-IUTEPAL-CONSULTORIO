@@ -5,8 +5,6 @@ export interface Patients {
   last_name: string; //apellido
   second_last_name: string; //segundo apellido
   dob: string; //fecha de nacimiento
-  height: string; //estatura
-  weight: string; //peso
   charge: string; //cargo
   direction: string; //direccion
   phone: string; //telefono

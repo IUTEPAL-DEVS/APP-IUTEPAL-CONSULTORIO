@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Patients } from '../types/patient';
 
 interface ViewPatientsProps {
@@ -23,13 +23,11 @@ export const ViewPatients: React.FC<ViewPatientsProps> = ({ children, id }) => {
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className="h-4/6 max-w-6xl">
-        <DialogHeader className="pb-0">
-          <DialogTitle className="text-3xl">Datos del paciente</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="h-4/6 max-w-xl">
+        <DialogTitle className="text-3xl">Datos del paciente</DialogTitle>
 
         {patient && (
-          <div className="mt--5 grid grid-cols-4 gap-3">
+          <div className="mt-[-210px] grid grid-cols-2 gap-3">
             <div>
               <h4 className="text-lg font-semibold text-primary">Cedula</h4>
               <p>{patient.id}</p>
@@ -63,54 +61,6 @@ export const ViewPatients: React.FC<ViewPatientsProps> = ({ children, id }) => {
             <div>
               <h4 className="text-lg font-semibold text-primary">Edad</h4>
               <p>{patient.age}</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Altura</h4>
-              <p>{patient.height} m</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Peso</h4>
-              <p>{patient.weight} Kg</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Tipo de Sangre</h4>
-              <p>{patient.blood_type}</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Temperatura</h4>
-              <p>{patient.temperature} C</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Patología</h4>
-              <p>{patient.pathology}</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Motivo de Consulta</h4>
-              <p>{patient.query_reason}</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Diagnóstico</h4>
-              <p>{patient.diagnosis}</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Antecedentes Clínicos</h4>
-              <p>{patient.clinical_history ? 'Sí' : 'No'}</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Fuma</h4>
-              <p>{patient.smoke ? 'Sí' : 'No'}</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Bebe</h4>
-              <p>{patient.drink ? 'Sí' : 'No'}</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Es Alérgico</h4>
-              <p>{patient.allergic ? 'Sí' : 'No'}</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-primary">Discapacidad</h4>
-              <p>{patient.disability ? 'Sí' : 'No'}</p>
             </div>
           </div>
         )}

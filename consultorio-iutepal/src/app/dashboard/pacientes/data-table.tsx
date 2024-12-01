@@ -25,6 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@/src/components/ui/skeleton';
 import { columns } from './columns';
 import { PatientsCreateModal } from '@/src/components/create-patients-modal';
+import { translateColumnId } from '@/src/lib/utils';
 
 export function DataTablePatiens() {
   const [data, setData] = React.useState([]);
@@ -102,7 +103,7 @@ export function DataTablePatiens() {
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     >
-                      {column.id}
+                      {translateColumnId(column.id)}
                     </DropdownMenuCheckboxItem>
                   );
                 })}

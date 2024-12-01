@@ -48,7 +48,6 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({
   isApellidoPaterno,
   isApellidoMaterno,
   isUsername,
-  isImage,
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -72,12 +71,12 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({
       apellido_p: user?.apellido_p,
       apellido_m: user?.apellido_m,
       username: user?.username,
-      image_url: user?.avatar_url,
     },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsUpdating(true);
+
     const response = await fetch('/api/usuario', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -177,21 +176,6 @@ export const ProfileUpdateModal: React.FC<ProfileUpdateModalProps> = ({
                     <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input defaultValue={user?.username} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            {isImage && (
-              <FormField
-                control={form.control}
-                name="image_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Subir Imagen</FormLabel>
-                    <FormControl>
-                      <Input type="file" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -15,7 +15,7 @@ import { PatientsCreateModal } from '@/src/components/create-patients-modal';
 import { ConsultData } from '@/src/types/consult-data';
 import { formatDate } from '@/utils/form-date';
 
-export function columns(handleRefresh: () => void): ColumnDef<ConsultData>[] {
+export function columns(handleRefresh: () => void, id: string): ColumnDef<ConsultData>[] {
   return [
     {
       accessorKey: 'created_at',
@@ -56,9 +56,7 @@ export function columns(handleRefresh: () => void): ColumnDef<ConsultData>[] {
     {
       id: 'actions',
       enableHiding: false,
-      cell: ({ row }) => {
-        const patient = row.original;
-
+      cell: () => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -73,19 +71,10 @@ export function columns(handleRefresh: () => void): ColumnDef<ConsultData>[] {
 
               <div className="flex flex-col gap-y-2">
                 <Button variant={'ghost'}>
-                  <ViewPatients id={patient.id}>
-                    <p>Ver Datos completos</p>
-                  </ViewPatients>
+                  <p>Ver Datos completos</p>
                 </Button>
                 <Button variant={'ghost'}>
-                  <PatientsCreateModal
-                    onRefresh={handleRefresh}
-                    sub="modificacion de un"
-                    id={patient.id}
-                    title="Modificar datos del paciente"
-                  >
-                    <p>Modificar Datos</p>
-                  </PatientsCreateModal>
+                  <p>Modificar Datos</p>
                 </Button>
               </div>
             </DropdownMenuContent>

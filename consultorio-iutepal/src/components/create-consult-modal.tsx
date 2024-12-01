@@ -39,7 +39,7 @@ const FormSchema = z.object({
   weight: z.string(),
   blood_type: z.string(),
   temperature: z.string(),
-  pathology: z.string(),
+  pathology: z.number(),
   reason_consultation: z.string(),
   diagnosis: z.string(),
   medical_history: z.boolean().optional(),
@@ -61,33 +61,6 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
 
   const [hasReposo, setHasReposo] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      const fetchPatient = async () => {
-        const response = await fetch(`/api/consultas?patient_id=${id}`);
-        console.log(response);
-        const result = await response.json();
-        const patient = result.data[0];
-        form.reset({
-          height: patient.height,
-          weight: patient.weight,
-          blood_type: patient.blood_type,
-          temperature: patient.temperature,
-          pathology: patient.pathology,
-          reason_consultation: patient.reason_consultation,
-          diagnosis: patient.diagnosis,
-          medical_history: patient.medical_history,
-          smoke: patient.smoke,
-          drink: patient.drink,
-          allergic: patient.allergic,
-          discapacity: patient.discapacity,
-          recipe_url: patient.recipe_url,
-        });
-      };
-      fetchPatient();
-    }
-  }, [id, form]);
-
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
 
@@ -97,8 +70,8 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
         patient_id: id,
       };
 
-      const response = await fetch(id ? `/api/consultas?patient_id=${id}` : `/api/consultas`, {
-        method: id ? 'PUT' : 'POST',
+      const response = await fetch(`/api/consultas?patient_id=${id}`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },

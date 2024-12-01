@@ -1,43 +1,43 @@
 'use client';
 
-import * as React from 'react';
-import { format, getMonth, getYear, setMonth, setYear } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { useState, useEffect } from 'react';
+import { setMonth, setYear, getMonth } from 'date-fns';
+import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
 import { Button } from './ui/button';
-import { cn } from '../lib/utils';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
+import { CalendarIcon } from 'lucide-react';
 import { Calendar } from './ui/calendar';
+import { es } from 'date-fns/locale';
 
 interface DatePickerProps {
-  startYear?: number;
-  endYear?: number;
-  value: Date | undefined;
-  onChange: (date: Date | undefined) => void;
+  value?: Date;
+  onChange: (date: Date) => void;
 }
 
-export function DatePicker({
-  startYear = getYear(new Date()) - 100,
-  endYear = getYear(new Date()) + 100,
-  onChange,
-}: DatePickerProps) {
-  const [date, setDate] = React.useState<Date>(new Date());
+export function DatePicker({ value, onChange }: DatePickerProps) {
+  const [date, setDate] = useState(value || new Date());
+
+  useEffect(() => {
+    if (value) {
+      setDate(value);
+    }
+  }, [value]);
 
   const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
   ];
-  const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
+  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
 
   const handleMonthChange = (month: string) => {
     const newDate = setMonth(date, months.indexOf(month));
@@ -61,19 +61,16 @@ export function DatePicker({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant={'outline'}
-          className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}
-        >
+        <Button variant={'outline'} className="w-full justify-start text-left font-normal">
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, 'PPP') : <span>Pick a date</span>}
+          <span>{date ? date.toLocaleDateString('es-ES') : 'Seleccione fecha'}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <div className="flex justify-between p-2">
           <Select onValueChange={handleMonthChange} value={months[getMonth(date)]}>
             <SelectTrigger className="w-[110px]">
-              <SelectValue placeholder="Month" />
+              <SelectValue placeholder="Mes" />
             </SelectTrigger>
             <SelectContent>
               {months.map((month) => (
@@ -83,9 +80,9 @@ export function DatePicker({
               ))}
             </SelectContent>
           </Select>
-          <Select onValueChange={handleYearChange} value={getYear(date).toString()}>
+          <Select onValueChange={handleYearChange} value={date.getFullYear().toString()}>
             <SelectTrigger className="w-[110px]">
-              <SelectValue placeholder="Year" />
+              <SelectValue placeholder="Año" />
             </SelectTrigger>
             <SelectContent>
               {years.map((year) => (
@@ -96,12 +93,12 @@ export function DatePicker({
             </SelectContent>
           </Select>
         </div>
-
         <Calendar
           mode="single"
           selected={date}
           onSelect={handleSelect}
           initialFocus
+          locale={es}
           month={date}
           onMonthChange={setDate}
         />

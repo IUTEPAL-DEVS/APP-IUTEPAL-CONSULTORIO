@@ -14,6 +14,8 @@ import {
 import { Patients } from '@/src/types/patient';
 import { PatientsCreateModal } from '@/src/components/create-patients-modal';
 import Link from 'next/link';
+import { formatDate } from '@/src/lib/utils';
+import { ViewPatients } from '@/src/components/view-patients';
 
 export function columns(handleRefresh: () => void): ColumnDef<Patients>[] {
   return [
@@ -63,7 +65,22 @@ export function columns(handleRefresh: () => void): ColumnDef<Patients>[] {
           </Button>
         );
       },
-      cell: ({ row }) => <div className="lowercase">{row.getValue('dob')}</div>,
+      cell: ({ row }) => {
+        const dob = row.getValue('dob');
+        return <div className="ml-14 lowercase">{formatDate(dob as string)}</div>;
+      },
+    },
+    {
+      accessorKey: 'sex',
+      header: ({ column }) => {
+        return (
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Sexo
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => <div className="capitalize">{row.getValue('sex')}</div>,
     },
     {
       accessorKey: 'charge',
@@ -99,6 +116,11 @@ export function columns(handleRefresh: () => void): ColumnDef<Patients>[] {
               <DropdownMenuSeparator />
 
               <div className="flex flex-col gap-y-2">
+                <ViewPatients id={patient.id}>
+                  <Button variant={'ghost'}>
+                    <p>Ver Datos del paciente</p>
+                  </Button>
+                </ViewPatients>
                 <Button variant={'ghost'}>
                   <Link href={`/dashboard/pacientes/${patient.id}`} passHref>
                     <p>Ver Consultas</p>

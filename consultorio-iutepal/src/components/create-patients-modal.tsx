@@ -30,11 +30,23 @@ interface PatientsCreateModalProps {
 }
 
 const FormSchema = z.object({
-  id: z.string().optional(),
-  firts_name: z.string().optional(),
-  second_name: z.string().optional(),
-  last_name: z.string().optional(),
-  second_last_name: z.string().optional(),
+  id: z.string().regex(/^\d+$/, { message: 'La cédula no debe contener letras.' }).optional(),
+  firts_name: z
+    .string()
+    .regex(/^[a-zA-Z\s]+$/, { message: 'El nombre no debe contener números.' })
+    .optional(),
+  second_name: z
+    .string()
+    .regex(/^[a-zA-Z\s]+$/, { message: 'El segundo nombre no debe contener números.' })
+    .optional(),
+  last_name: z
+    .string()
+    .regex(/^[a-zA-Z\s]+$/, { message: 'El apellido paterno no debe contener números.' })
+    .optional(),
+  second_last_name: z
+    .string()
+    .regex(/^[a-zA-Z\s]+$/, { message: 'El apellido materno no debe contener números.' })
+    .optional(),
   dob: z
     .date({
       required_error: 'La fecha de Nacimiento es requerida.',
@@ -42,10 +54,13 @@ const FormSchema = z.object({
     .optional(),
   charge: z.string().optional(),
   direction: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z
+    .string()
+    .regex(/^\+58\d+$/, { message: 'El teléfono celular debe comenzar con +58 y no debe contener caracteres.' })
+    .optional(),
   email: z.string().optional(),
   sex: z.string().optional(),
-  age: z.string().optional(),
+  age: z.string().regex(/^\d+$/, { message: 'La edad no debe contener letras o caracteres.' }).optional(),
 });
 
 export function PatientsCreateModal({ children, id, title, sub, onRefresh }: PatientsCreateModalProps) {
@@ -53,7 +68,9 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {},
+    defaultValues: {
+      phone: '+58', // Valor por defecto para el teléfono celular
+    },
   });
 
   useEffect(() => {
@@ -63,7 +80,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
         const result = await response.json();
         const patient = result.data[0];
         form.reset({
-          id: patient.id.toString(),
+          id: patient.id.toString() || '',
           firts_name: patient.firts_name,
           second_name: patient.second_name || '',
           last_name: patient.last_name,
@@ -71,7 +88,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
           dob: new Date(patient.dob),
           charge: patient.charge,
           direction: patient.direction,
-          phone: patient.phone,
+          phone: patient.phone || '+58',
           email: patient.email,
           sex: patient.sex,
           age: patient.age.toString(),
@@ -126,429 +143,197 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="overflow-y-scroll sm:h-2/3 sm:max-w-3xl">
+      <DialogContent className="sm:h-2/3 sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="text-xl">{title}</DialogTitle>
           <DialogDescription>
             Asegurese de ingresar todos los datos necesarios para la {sub} paciente.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cedula</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid grid-cols-4 gap-4">
+        {isLoading ? (
+          <span className="loader"></span>
+        ) : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="firts_name"
+                name="id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Primer Nombre</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <FormLabel>Cedula</FormLabel>
+                    <FormControl>{id ? <Input {...field} disabled /> : <Input {...field} />}</FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="second_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Segundo Nombre</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="last_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Apellido Paterno</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="second_last_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Apellido Materno</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="charge"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cargo</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <div className="grid grid-cols-4 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firts_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Primer Nombre</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar Cargo" />
-                        </SelectTrigger>
+                        <Input {...field} />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Estudiante">Estudiante</SelectItem>
-                        <SelectItem value="Administracion">Administracion</SelectItem>
-                        <SelectItem value="Docente">Docente</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="direction"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Direccion Corta</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Telefono celular</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Correo electronico</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="dob"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Fecha de Nacimiento</FormLabel>
-                    <DatePicker onChange={field.onChange} value={field.value} />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* <FormField
-                                control={form.control}
-                                name="height"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Altura</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            /> */}
-              {/* <FormField
-                                control={form.control}
-                                name="weight"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Peso</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            /> */}
-              <FormField
-                control={form.control}
-                name="sex"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Sexo</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="second_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Segundo Nombre</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar" />
-                        </SelectTrigger>
+                        <Input {...field} />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Masculino">Masculino</SelectItem>
-                        <SelectItem value="Femenino">Femenino</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="age"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Edad</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* <FormField
-                                control={form.control}
-                                name="blood_type"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Tipo de Sangre</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            /> */}
-              {/* <FormField
-                                control={form.control}
-                                name="temperature"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Temperatura</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            /> */}
-              {/* <FormField
-                                control={form.control}
-                                name="pathology"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Patologia</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <FormControl>
-                                                    <Button
-                                                        variant="outline"
-                                                        role="combobox"
-                                                        className={cn(
-                                                            "justify-between w-full",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    >
-                                                        {field.value
-                                                            ? languages.find(
-                                                                (language) => language.value === field.value
-                                                            )?.label
-                                                            : "Seleccione"}
-                                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-[200px] p-0">
-                                                <Command>
-                                                    <CommandInput placeholder="Search language..." />
-                                                    <CommandList>
-                                                        <CommandEmpty>No se encuentran patologias.</CommandEmpty>
-                                                        <CommandGroup>
-                                                            {languages.map((language) => (
-                                                                <CommandItem
-                                                                    value={language.label}
-                                                                    key={language.value}
-                                                                    onSelect={() => {
-                                                                        form.setValue("pathology", language.value)
-                                                                    }}
-                                                                >
-                                                                    <Check
-                                                                        className={cn(
-                                                                            "mr-2 h-4 w-4",
-                                                                            language.value === field.value
-                                                                                ? "opacity-100"
-                                                                                : "opacity-0"
-                                                                        )}
-                                                                    />
-                                                                    {language.label}
-                                                                </CommandItem>
-                                                            ))}
-                                                        </CommandGroup>
-                                                    </CommandList>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            /> */}
-            </div>
-            {/* <div className="grid grid-cols-2 gap-3">
-                            <FormField
-                                control={form.control}
-                                name="query_reason"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Motivo de Consulta</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                className="resize-none"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="diagnosis"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Diagnostico</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                className="resize-none"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div> */}
-            {/* <div className="grid grid-cols-4 gap-4">
-                            <FormField
-                                control={form.control}
-                                name="clinical_history"
-                                render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-2">
-                                        <FormControl>
-                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
-                                        </FormControl>
-                                        <FormLabel>Posee Antecendentes Clinicos?</FormLabel>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="smoke"
-                                render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-2">
-                                        <FormControl>
-                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
-                                        </FormControl>
-                                        <FormLabel>Fuma?</FormLabel>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="drink"
-                                render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-2">
-                                        <FormControl>
-                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
-                                        </FormControl>
-                                        <FormLabel>Bebe?</FormLabel>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="allergic"
-                                render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-2">
-                                        <FormControl>
-                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
-                                        </FormControl>
-                                        <FormLabel>Es Alergico?</FormLabel>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="disability"
-                                render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-2">
-                                        <FormControl>
-                                            <Checkbox onCheckedChange={field.onChange} checked={field.value || false} />
-                                        </FormControl>
-                                        <FormLabel>Posee alguna discapacidad?</FormLabel>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormItem className="flex items-center space-x-2">
-                                <FormControl>
-                                    <Checkbox
-                                        checked={hasReposo}
-                                        onCheckedChange={(checked) => setHasReposo(checked === true)}
-                                    />
-                                </FormControl>
-                                <FormLabel>El paciente tiene algun tipo de reposo/recipe?</FormLabel>
-                            </FormItem>
-                        </div>
-                        {hasReposo && (
-                            <FormField
-                                control={form.control}
-                                name="recipe_url"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Reposo</FormLabel>
-                                        <FormControl>
-                                            <Input type="file" {...field} value={field.value || ''} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        )} */}
-            <DialogFooter>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Guardando...' : 'Guardar'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Apellido Paterno</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="second_last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Apellido Materno</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="charge"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cargo</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar Cargo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Estudiante">Estudiante</SelectItem>
+                          <SelectItem value="Administracion">Administracion</SelectItem>
+                          <SelectItem value="Docente">Docente</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="direction"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Direccion Corta</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefono celular</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Correo electronico</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dob"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fecha de Nacimiento</FormLabel>
+                      <DatePicker onChange={field.onChange} value={field.value} />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="sex"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sexo</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Masculino">Masculino</SelectItem>
+                          <SelectItem value="Femenino">Femenino</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="age"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Edad</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? 'Guardando...' : 'Guardar'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        )}
       </DialogContent>
     </Dialog>
   );
