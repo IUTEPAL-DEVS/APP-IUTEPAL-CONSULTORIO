@@ -24,13 +24,9 @@ const NavMobile = ({ title }: NavMobileProps) => {
             <Image alt="Plan Seguro" className="h-20 w-full object-contain" src={logo} />
           </SheetTitle>
         </SheetHeader>
-        <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-          <section className="flex grow flex-col gap-y-5 overflow-y-auto bg-slate-100 px-6 pb-4">
-            <div className="bg flex grow flex-row space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-              <NavLinks />
-            </div>
-          </section>
-        </aside>
+        <div className="my-5 flex grow flex-row space-x-2 md:flex-col md:space-x-0 md:space-y-2">
+          <NavLinks />
+        </div>
       </SheetContent>
     </Sheet>
   );

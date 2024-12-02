@@ -26,6 +26,7 @@ import { ChevronsUpDown } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
 import { usePathologies } from '../hooks/use-pathologies';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { PathologySystem } from '../types/system-pathology';
 
 interface ConsultCreateModalProps {
   children: React.ReactNode;
@@ -33,10 +34,6 @@ interface ConsultCreateModalProps {
   title: string;
   sub: string;
   onRefresh: () => void;
-}
-interface PathologySystem {
-  id: number;
-  name: string;
 }
 
 interface Pathology {
@@ -78,7 +75,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
     defaultValues: {
       height: 0,
       weight: 0,
-      temperature: 0
+      temperature: 0,
     },
   });
 
@@ -310,7 +307,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
             />
 
             <div className="grid grid-cols-2 gap-3">
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="pathology_system"
                 render={({ field }) => (
@@ -322,7 +319,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                         field.onChange(systemId);
                         setSelectedSystem(systemId);
                         // Reiniciar patología al cambiar sistema
-                        form.setValue('pathology', undefined);
+                        form.setValue('pathology', null);
                       }}
                       value={field.value ? field.value.toString() : ''}
                     >
@@ -340,9 +337,9 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="pathology"
                 render={({ field }) => (
@@ -369,7 +366,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
 
             <div className="grid grid-cols-2 gap-3">

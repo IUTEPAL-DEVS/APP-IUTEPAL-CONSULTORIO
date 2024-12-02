@@ -7,7 +7,7 @@ export default function NavLinks() {
 
   return (
     <>
-      {links.slice(0, -1).map((link) => {
+      {links.map((link) => {
         const LinkIcon = link.icon;
         const isActive = router === link.href;
         return (

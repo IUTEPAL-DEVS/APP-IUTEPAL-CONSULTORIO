@@ -1,4 +1,4 @@
-import { BarChart, CalendarIcon, FileTextIcon, HomeIcon, UsersIcon, WalletIcon } from 'lucide-react';
+import { BarChart, CalendarIcon, Dna, FileTextIcon, HomeIcon, UsersIcon, WalletIcon } from 'lucide-react';
 
 // Depending on the size of the application, this would be stored in a database.
 export const links = [
@@ -17,4 +17,5 @@ export const links = [
   // { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart },
   // { name: 'Inventario', href: '/dashboard/inventario', icon: WalletIcon },
   { name: 'Perfil', href: '/dashboard/perfil', icon: UsersIcon },
+  { name: 'Patologias', href: '/dashboard/patologias', icon: Dna },
 ];
