@@ -16,7 +16,7 @@ import { Input } from './ui/input';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '../hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Checkbox } from './ui/checkbox';
 import { Textarea } from './ui/textarea';
@@ -34,12 +34,23 @@ interface ConsultCreateModalProps {
   sub: string;
   onRefresh: () => void;
 }
+interface PathologySystem {
+  id: number;
+  name: string;
+}
+
+interface Pathology {
+  id: number;
+  name: string;
+  patholy_system_id: number;
+}
 
 const FormSchema = z.object({
   height: z.number(),
   weight: z.number(),
   blood_type: z.string(),
   temperature: z.number(),
+  pathology_system: z.number(),
   pathology: z.number(),
   reason_consultation: z.string(),
   diagnosis: z.string(),
@@ -58,14 +69,16 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
   const [weightUnit, setWeightUnit] = useState('kg');
   const [temperatureUnit, setTemperatureUnit] = useState('celsius');
 
-  const { pathologies }: { pathologies: { id: string; name: string }[] } = usePathologies();
+  const [systems, setSystems] = useState<PathologySystem[]>([]);
+  const [pathologies, setPathologies] = useState<Pathology[]>([]);
+  const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       height: 0,
       weight: 0,
-      temperature: 0,
+      temperature: 0
     },
   });
 
@@ -94,6 +107,48 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
     }
     form.setValue('temperature', temperature);
   };
+  // Cargar sistemas al inicio
+  useEffect(() => {
+    async function fetchSystems() {
+      try {
+        const response = await fetch('/api/sistema');
+        const result = await response.json();
+        setSystems(result.data);
+        console.log(result);
+      } catch (error) {
+        console.error('Error fetching pathology systems:', error);
+        toast({
+          title: 'Error',
+          description: 'No se pudieron cargar los sistemas de patología',
+        });
+      }
+    }
+    fetchSystems();
+  }, []);
+
+  // Cargar patologías cuando se selecciona un sistema
+  useEffect(() => {
+    async function fetchPathologies() {
+      if (!selectedSystem) {
+        setPathologies([]);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/patologias?system_id=${selectedSystem}`);
+        const result = await response.json();
+        setPathologies(result.data);
+        console.log('Datos de patologías:', result.data);
+      } catch (error) {
+        console.error('Error fetching pathologies:', error);
+        toast({
+          title: 'Error',
+          description: 'No se pudieron cargar las patologías',
+        });
+      }
+    }
+    fetchPathologies();
+  }, [selectedSystem]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
@@ -241,63 +296,47 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
               />
             </div>
             <FormField
-                control={form.control}
-                name="blood_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Sangre</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              control={form.control}
+              name="blood_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Sangre</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className='grid grid-cols-2 gap-3'>
-            <FormField
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
                 control={form.control}
-                name="pathology"
+                name="pathology_system"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sistema Patologia</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn('w-full justify-between', !field.value && 'text-muted-foreground')}
-                          >
-                            {field.value
-                              ? pathologies.find((pathology) => pathology.id === field.value)?.name
-                              : 'Seleccione'}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
-                          <CommandInput placeholder="Buscar patología..." />
-                          <CommandList>
-                            <CommandEmpty>No se encuentran patologías.</CommandEmpty>
-                            <CommandGroup>
-                              {pathologies.map((pathology) => (
-                                <CommandItem
-                                  value={pathology.name}
-                                  key={pathology.id}
-                                  onSelect={() => {
-                                    form.setValue('pathology', pathology.id);
-                                  }}
-                                >
-                                  {pathology.name}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <FormLabel>Sistema de Patología</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        const systemId = parseInt(value);
+                        field.onChange(systemId);
+                        setSelectedSystem(systemId);
+                        // Reiniciar patología al cambiar sistema
+                        form.setValue('pathology', undefined);
+                      }}
+                      value={field.value ? field.value.toString() : ''}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione un sistema" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {systems.map((system) => (
+                          <SelectItem key={system.id} value={system.id.toString()}>
+                            {system.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -309,43 +348,24 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Patología</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn('w-full justify-between', !field.value && 'text-muted-foreground')}
-                          >
-                            {field.value
-                              ? pathologies.find((pathology) => pathology.id === field.value)?.name
-                              : 'Seleccione'}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
-                          <CommandInput placeholder="Buscar patología..." />
-                          <CommandList>
-                            <CommandEmpty>No se encuentran patologías.</CommandEmpty>
-                            <CommandGroup>
-                              {pathologies.map((pathology) => (
-                                <CommandItem
-                                  value={pathology.name}
-                                  key={pathology.id}
-                                  onSelect={() => {
-                                    form.setValue('pathology', pathology.id);
-                                  }}
-                                >
-                                  {pathology.name}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(parseInt(value));
+                      }}
+                      value={field.value ? field.value.toString() : ''}
+                      disabled={!selectedSystem}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione una patología" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pathologies.map((pathology) => (
+                          <SelectItem key={pathology.id} value={pathology.id.toString()}>
+                            {pathology.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
