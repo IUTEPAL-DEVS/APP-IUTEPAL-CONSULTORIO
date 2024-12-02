@@ -8,13 +8,18 @@ export async function GET(req: NextRequest) {
     cookies: () => cookieStore,
   });
 
-  const { data: pathologies, error } = await supabase.from('pathologies').select('*');
-  console.log('pathologies', pathologies);
+  const systemId = req.nextUrl.searchParams.get('system_id');
+
+  if (!systemId) {
+    return NextResponse.json({ error: 'El ID del sistema de patologías es obligatorio.' }, { status: 400 });
+  }
+
+  const { data, error } = await supabase.from('pathology').select('*').eq('patholy_system_id', systemId);
 
   if (error) {
-    console.log('Error en GET:', error.message);
+    console.log('Error al obtener patologías:', error.message);
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  return NextResponse.json({ pathologies });
+  return NextResponse.json({ data });
 }
