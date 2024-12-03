@@ -161,7 +161,9 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Cedula</FormLabel>
-                    <FormControl>{id ? <Input {...field} disabled /> : <Input {...field} />}</FormControl>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

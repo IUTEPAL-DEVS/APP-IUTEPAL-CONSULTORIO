@@ -90,7 +90,7 @@ export function CreatePathologyModal({ children, title, onRefresh }: ConsultCrea
 
       setIsOpen(false); // Cerrar el modal
     } catch (error) {
-      console.error('Error en la solicitud POST:', error.message); // Agregar esta línea para depuración
+      console.error('Error en la solicitud POST:', error); // Agregar esta línea para depuración
       toast({
         title: 'Error',
         description: 'Error al crear la patología',

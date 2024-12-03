@@ -26,3 +26,13 @@ export function formatDate(dateString: string): string {
   const [year, month, day] = dateString.split('-');
   return `${day}-${month}-${year}`;
 }
+
+// Función para convertir la primera letra a mayúscula
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export const formatDateConsult = (dateString: string) => {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('es-ES', options);
+};
