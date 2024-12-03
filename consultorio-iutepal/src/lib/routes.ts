@@ -16,6 +16,7 @@ export const links = [
   },
   // { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart },
   // { name: 'Inventario', href: '/dashboard/inventario', icon: WalletIcon },
-  { name: 'Perfil', href: '/dashboard/perfil', icon: UsersIcon },
   { name: 'Patologias', href: '/dashboard/patologias', icon: Dna },
+  // ! do not move this route up
+  { name: 'Perfil', href: '/dashboard/perfil', icon: UsersIcon },
 ];
