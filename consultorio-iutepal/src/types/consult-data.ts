@@ -12,5 +12,5 @@ export interface ConsultData {
   allergic: boolean;
   discapacity: boolean;
   recipe_url: string;
-  pathology_system: string;
+  pathology_system_id: string;
 }

@@ -20,11 +20,6 @@ import { useState, useEffect } from 'react';
 
 import { Checkbox } from './ui/checkbox';
 import { Textarea } from './ui/textarea';
-import { cn } from '../lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { ChevronsUpDown } from 'lucide-react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
-import { usePathologies } from '../hooks/use-pathologies';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { PathologySystem } from '../types/system-pathology';
 
@@ -39,18 +34,18 @@ interface ConsultCreateModalProps {
 interface Pathology {
   id: number;
   name: string;
-  patholy_system_id: number;
+  pathology_system_id: number;
 }
 
 const FormSchema = z.object({
-  height: z.number(),
-  weight: z.number(),
-  blood_type: z.string(),
-  temperature: z.number(),
-  pathology_system: z.number(),
-  pathology: z.number(),
-  reason_consultation: z.string(),
-  diagnosis: z.string(),
+  height: z.number().nullable(),
+  weight: z.number().nullable(),
+  blood_type: z.string().nullable(),
+  temperature: z.number().nullable(),
+  pathology_system_id: z.number().nullable(),
+  pathology: z.number().nullable(),
+  reason_consultation: z.string().nullable(),
+  diagnosis: z.string().nullable(),
   medical_history: z.boolean().optional(),
   smoke: z.boolean().optional(),
   drink: z.boolean().optional(),
@@ -73,9 +68,9 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      height: 0,
-      weight: 0,
-      temperature: 0,
+      height: null,
+      weight: null,
+      temperature: null,
     },
   });
 
@@ -104,14 +99,15 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
     }
     form.setValue('temperature', temperature);
   };
+
   // Cargar sistemas al inicio
   useEffect(() => {
     async function fetchSystems() {
       try {
         const response = await fetch('/api/sistema');
         const result = await response.json();
-        setSystems(result.data);
-        console.log(result);
+        setSystems(result || []);
+        console.log('Sistemas:', result);
       } catch (error) {
         console.error('Error fetching pathology systems:', error);
         toast({
@@ -134,7 +130,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
       try {
         const response = await fetch(`/api/patologias?system_id=${selectedSystem}`);
         const result = await response.json();
-        setPathologies(result.data);
+        setPathologies(result.data || []);
         console.log('Datos de patologías:', result.data);
       } catch (error) {
         console.error('Error fetching pathologies:', error);
@@ -210,7 +206,11 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                       <FormControl>
                         <Input
                           {...field}
-                          value={unit === 'm' ? (parseFloat(field.value) / 100).toFixed(2) : field.value}
+                          value={
+                            unit === 'm'
+                              ? (parseFloat(field.value?.toString() || '0') / 100).toFixed(2)
+                              : field.value?.toString() || ''
+                          }
                           onChange={(e) => handleHeightChange(e.target.value)}
                         />
                       </FormControl>
@@ -238,7 +238,11 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                       <FormControl>
                         <Input
                           {...field}
-                          value={weightUnit === 'g' ? (parseFloat(field.value) * 1000).toFixed(0) : field.value}
+                          value={
+                            weightUnit === 'g'
+                              ? (parseFloat(field.value?.toString() || '0') * 1000).toFixed(0)
+                              : field.value?.toString() || ''
+                          }
                           onChange={(e) => handleWeightChange(e.target.value)}
                         />
                       </FormControl>
@@ -268,10 +272,10 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                           {...field}
                           value={
                             temperatureUnit === 'fahrenheit'
-                              ? ((parseFloat(field.value) * 9) / 5 + 32).toFixed(2)
+                              ? ((parseFloat(field.value?.toString() || '0') * 9) / 5 + 32).toFixed(2)
                               : temperatureUnit === 'kelvin'
-                                ? (parseFloat(field.value) + 273.15).toFixed(2)
-                                : field.value
+                                ? (parseFloat(field.value?.toString() || '0') + 273.15).toFixed(2)
+                                : field.value?.toString() || ''
                           }
                           onChange={(e) => handleTemperatureChange(e.target.value)}
                         />
@@ -299,7 +303,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                 <FormItem>
                   <FormLabel>Tipo de Sangre</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -307,9 +311,9 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
             />
 
             <div className="grid grid-cols-2 gap-3">
-              {/* <FormField
+              <FormField
                 control={form.control}
-                name="pathology_system"
+                name="pathology_system_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Sistema de Patología</FormLabel>
@@ -327,19 +331,20 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                         <SelectValue placeholder="Seleccione un sistema" />
                       </SelectTrigger>
                       <SelectContent>
-                        {systems.map((system) => (
-                          <SelectItem key={system.id} value={system.id.toString()}>
-                            {system.name}
-                          </SelectItem>
-                        ))}
+                        {Array.isArray(systems) &&
+                          systems.map((system) => (
+                            <SelectItem key={system.id} value={system.id.toString()}>
+                              {system.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
+              />
 
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="pathology"
                 render={({ field }) => (
@@ -356,17 +361,18 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                         <SelectValue placeholder="Seleccione una patología" />
                       </SelectTrigger>
                       <SelectContent>
-                        {pathologies.map((pathology) => (
-                          <SelectItem key={pathology.id} value={pathology.id.toString()}>
-                            {pathology.name}
-                          </SelectItem>
-                        ))}
+                        {Array.isArray(pathologies) &&
+                          pathologies.map((pathology) => (
+                            <SelectItem key={pathology.id} value={pathology.id.toString()}>
+                              {pathology.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -377,7 +383,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                   <FormItem>
                     <FormLabel>Motivo de Consulta</FormLabel>
                     <FormControl>
-                      <Textarea className="resize-none" {...field} />
+                      <Textarea className="resize-none" {...field} value={field.value || ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -390,7 +396,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                   <FormItem>
                     <FormLabel>Diagnostico</FormLabel>
                     <FormControl>
-                      <Textarea className="resize-none" {...field} />
+                      <Textarea className="resize-none" {...field} value={field.value || ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
