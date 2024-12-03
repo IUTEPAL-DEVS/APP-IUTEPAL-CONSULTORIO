@@ -7,7 +7,7 @@ export async function GET() {
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
   try {
-    const { data, error } = await supabase.from('pathology_system').select('*');
+    const { data, error } = await supabase.from('pathology_system').select('*, pathologies(*)');
 
     if (error) {
       console.error('Error al obtener sistemas de patología:', error);

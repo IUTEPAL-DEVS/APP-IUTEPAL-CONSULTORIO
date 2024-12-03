@@ -10,11 +10,12 @@ export async function GET(req: NextRequest) {
 
   const systemId = req.nextUrl.searchParams.get('system_id');
 
-  if (!systemId) {
-    return NextResponse.json({ error: 'El ID del sistema de patologías es obligatorio.' }, { status: 400 });
+  let query = supabase.from('pathologies').select('*');
+  if (systemId) {
+    query = query.eq('pathology_system_id', systemId);
   }
 
-  const { data, error } = await supabase.from('pathologies').select('*').eq('pathology_system_id', systemId);
+  const { data, error } = await query;
 
   if (error) {
     console.log('Error al obtener patologías:', error.message);

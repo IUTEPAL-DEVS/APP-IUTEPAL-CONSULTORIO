@@ -14,7 +14,7 @@ import { ConsultData } from '@/src/types/consult-data';
 import { formatDate } from '@/utils/form-date';
 import { ViewConsult } from '@/src/components/view-consult';
 
-export function columns(handleRefresh: () => void, id: string): ColumnDef<ConsultData>[] {
+export function columns(): ColumnDef<ConsultData>[] {
   return [
     {
       accessorKey: 'created_at',
@@ -55,7 +55,8 @@ export function columns(handleRefresh: () => void, id: string): ColumnDef<Consul
     {
       id: 'actions',
       enableHiding: false,
-      cell: () => {
+      cell: ({ row }) => {
+        const consultId = row.original.id;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -67,9 +68,8 @@ export function columns(handleRefresh: () => void, id: string): ColumnDef<Consul
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
               <DropdownMenuSeparator />
-
               <div className="flex flex-col gap-y-2">
-                <ViewConsult id={id}>
+                <ViewConsult id={consultId}>
                   <Button variant={'ghost'}>
                     <p>Ver Datos completos</p>
                   </Button>

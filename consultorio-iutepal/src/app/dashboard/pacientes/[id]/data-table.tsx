@@ -48,7 +48,7 @@ export function DataTablePatienConsult() {
       setLoading(true);
       const response = await fetch(`/api/consultas?patient_id=${id}`);
       const result = await response.json();
-      setData(result.data);
+      setData(result.data || []);
       setLoading(false);
     }
     fetchData();
@@ -56,7 +56,7 @@ export function DataTablePatienConsult() {
 
   const table = useReactTable({
     data: data,
-    columns: columns(handleRefresh, id),
+    columns: columns(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -136,15 +136,14 @@ export function DataTablePatienConsult() {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel()?.rows?.length ? (
-                (console.log(table.getRowModel().rows),
+              {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                     ))}
                   </TableRow>
-                )))
+                ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">

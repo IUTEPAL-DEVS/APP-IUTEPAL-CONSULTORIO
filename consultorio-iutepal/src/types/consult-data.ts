@@ -1,9 +1,14 @@
 export interface ConsultData {
-  weight: number;
+  id: string;
+  patient_id: string;
+  created_at: string;
   height: number;
+  weight: number;
   blood_type: string;
   temperature: number;
-  pathology: string;
+  pathology: {
+    name: string;
+  };
   reason_consultation: string;
   diagnosis: string;
   medical_history: boolean;
@@ -12,5 +17,8 @@ export interface ConsultData {
   allergic: boolean;
   discapacity: boolean;
   recipe_url: string;
-  pathology_system_id: string;
+  updated_at: string;
+  pathology_system_id: {
+    name: string;
+  };
 }
