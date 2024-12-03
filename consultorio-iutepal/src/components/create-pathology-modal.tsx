@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { PathologySystem } from '../types/system-pathology';
+import { toast } from '../hooks/use-toast';
 
 interface ConsultCreateModalProps {
   children: React.ReactNode;
@@ -19,13 +20,20 @@ interface ConsultCreateModalProps {
 }
 
 const FormSchema = z.object({
-  system_pathology: z.string().nonempty('Este campo es requerido'),
-  pathology: z.string().nonempty('Este campo es requerido'),
+  system_pathology: z
+    .string()
+    .regex(/^\d+$/, { message: 'El ID del sistema de patología debe ser un número.' })
+    .nonempty('Este campo es requerido'),
+  pathology: z
+    .string()
+    .regex(/^[a-zA-Z\s]+$/, { message: 'El nombre de la patología no debe contener números.' })
+    .nonempty('Este campo es requerido'),
 });
 
-export function CreatePathologyModal({ children, title }: ConsultCreateModalProps) {
+export function CreatePathologyModal({ children, title, onRefresh }: ConsultCreateModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [systemPathology, setSystemPathology] = useState<PathologySystem[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -50,16 +58,50 @@ export function CreatePathologyModal({ children, title }: ConsultCreateModalProp
     setIsLoading(true);
 
     try {
-      console.log(data);
+      console.log('Enviando datos:', data); // Agregar esta línea para depuración
+
+      const response = await fetch('/api/patologias', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.pathology,
+          pathology_system_id: data.system_pathology,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al crear la patología');
+      }
+
+      const result = await response.json();
+      console.log('Patología creada:', result);
+
+      toast({
+        title: 'Éxito',
+        description: 'Patología creada exitosamente',
+      });
+
+      if (onRefresh) {
+        onRefresh();
+      }
+
+      setIsOpen(false); // Cerrar el modal
     } catch (error) {
-      console.error(error);
+      console.error('Error en la solicitud POST:', error.message); // Agregar esta línea para depuración
+      toast({
+        title: 'Error',
+        description: 'Error al crear la patología',
+      });
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -73,7 +115,7 @@ export function CreatePathologyModal({ children, title }: ConsultCreateModalProp
                 name="system_pathology"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sistema Patologia</FormLabel>
+                    <FormLabel>Sistema Patología</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <SelectTrigger>
@@ -97,11 +139,10 @@ export function CreatePathologyModal({ children, title }: ConsultCreateModalProp
                 name="pathology"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Patologia</FormLabel>
+                    <FormLabel>Patología</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}

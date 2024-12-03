@@ -39,7 +39,6 @@ export default function Page() {
             <AccordionTrigger>{pathology.name}</AccordionTrigger>
           </AccordionItem>
         ))}
-        
       </Accordion>
     </>
   );
