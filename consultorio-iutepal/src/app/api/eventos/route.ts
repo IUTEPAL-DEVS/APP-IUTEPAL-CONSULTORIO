@@ -33,14 +33,21 @@ export async function POST(req: NextRequest) {
 
   const { id, ...eventData } = await req.json(); // Excluir el campo id
 
-  const { data, error } = await supabase.from('event').insert([eventData]);
+  const { data: event, error: eventError } = await supabase.from('event').insert([eventData]).select().single();
 
-  if (error) {
-    console.log('Error en POST:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  if (eventError) {
+    console.log('Error en POST:', eventError.message);
+    return NextResponse.json({ error: eventError.message }, { status: 400 });
   }
 
-  return NextResponse.json({ data });
+  const { data: notification, error: notificationError } = await supabase.from('notification').insert([{ id_event: event.id }]);
+
+  if (notificationError) {
+    console.log('Error en POST:', notificationError.message);
+    return NextResponse.json({ error: notificationError.message }, { status: 400 });
+  }
+
+  return NextResponse.json({ event, notification });
 }
 
 export async function PUT(req: NextRequest) {

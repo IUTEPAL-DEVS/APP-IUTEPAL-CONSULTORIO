@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns"
+import { format, isBefore, startOfDay } from "date-fns"
 import { es } from "date-fns/locale"
 import { Pencil, Plus, Trash } from "lucide-react"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card"
@@ -129,6 +129,8 @@ export default function ExpandedCalendar() {
         date && new Date(event.date_time).toDateString() === date.toDateString()
     )
 
+    const today = startOfDay(new Date())
+
     return (
         <div className="grid gap-y-4 p-4 size-full">
             <Calendar
@@ -140,6 +142,7 @@ export default function ExpandedCalendar() {
                 modifiersClassNames={{
                     hasEvents: "day_hasEvents"
                 }}
+                disabled={(date) => isBefore(startOfDay(date), today)}
             />
             <Card className="flex-1 shadow">
                 <CardHeader>

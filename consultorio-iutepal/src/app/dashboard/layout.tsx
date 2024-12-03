@@ -29,7 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <h2 className="mt-4 flex-1 text-2xl font-semibold">{pageTitle}</h2>
             <RealTimeDate />
             <div className="flex items-center gap-x-4 lg:gap-x-6">
-              {/* <IconNotification /> */}
+              <IconNotification />
 
               <Separator className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" aria-hidden="true" />
 
