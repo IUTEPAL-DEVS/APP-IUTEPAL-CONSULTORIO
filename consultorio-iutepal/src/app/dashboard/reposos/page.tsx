@@ -117,7 +117,7 @@ export default function Page() {
                   className="col-span-3"
                 />
               </div>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">Subir reposo</Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -148,7 +148,7 @@ export default function Page() {
                 </Label>
                 <Textarea placeholder="asunto del reposo" />
               </div>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">Registrar reposo</Button>
             </form>
           </DialogContent>
         </Dialog>
