@@ -24,13 +24,31 @@ export async function POST(req: NextRequest) {
     cookies: () => cookieStore,
   });
 
-  const { recipe_url, patient_name } = await req.json();
+  const formData = await req.formData();
+  const file = formData.get('file') as File;
+  const patient_name = formData.get('patient_name') as string;
 
+  if (!file) {
+    return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+  }
+
+  // Subir el archivo a Supabase Storage
+  const { data: storageData, error: storageError } = await supabase.storage
+    .from('reposos')
+    .upload(`recipes/${file.name}`, file);
+
+  if (storageError) {
+    console.log('Error uploading file:', storageError.message);
+    return NextResponse.json({ error: storageError.message }, { status: 500 });
+  }
+
+  // Obtener la URL del archivo
+  const fileUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/reposos/${storageData.path}`;
+
+  // Guardar la URL en la base de datos
   const { data, error } = await supabase
     .from('recipe')
-    .insert([
-      { recipe_url, patient_name },
-    ])
+    .insert([{ recipe_url: fileUrl, patient_name }])
     .select();
 
   if (error) {
