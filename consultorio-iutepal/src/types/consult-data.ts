@@ -6,7 +6,7 @@ export interface ConsultData {
   weight: number;
   blood_type: string;
   temperature: number;
-  pathology: {
+  pathology_id: {
     name: string;
   };
   reason_consultation: string;

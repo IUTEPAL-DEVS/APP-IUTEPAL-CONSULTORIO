@@ -43,7 +43,7 @@ const FormSchema = z.object({
   blood_type: z.string().nullable(),
   temperature: z.number().nullable(),
   pathology_system_id: z.number().nullable(),
-  pathology: z.number().nullable(),
+  pathology_id: z.number().nullable(),
   reason_consultation: z.string().nullable(),
   diagnosis: z.string().nullable(),
   medical_history: z.boolean().optional(),
@@ -323,7 +323,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                         field.onChange(systemId);
                         setSelectedSystem(systemId);
                         // Reiniciar patología al cambiar sistema
-                        form.setValue('pathology', null);
+                        form.setValue('pathology_id', null);
                       }}
                       value={field.value ? field.value.toString() : ''}
                     >
@@ -346,7 +346,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
 
               <FormField
                 control={form.control}
-                name="pathology"
+                name="pathology_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Patología</FormLabel>
