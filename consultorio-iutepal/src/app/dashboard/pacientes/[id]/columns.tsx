@@ -53,6 +53,16 @@ export function columns(): ColumnDef<ConsultData>[] {
       cell: ({ row }) => <div className="capitalize">{row.getValue('diagnosis')}</div>,
     },
     {
+      accessorKey: 'pathology_id.name',
+      header: 'Patología',
+      cell: ({ row }) => <div className="capitalize">{row.original.pathology_id.name}</div>,
+    },
+    {
+      accessorKey: 'pathology_system_id.name',
+      header: 'Sistema Patológico',
+      cell: ({ row }) => <div className="capitalize">{row.original.pathology_system_id.name}</div>,
+    },
+    {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {

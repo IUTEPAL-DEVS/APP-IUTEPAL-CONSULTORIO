@@ -9,10 +9,19 @@ export async function GET(req: NextRequest) {
   });
 
   const id_patient = req.nextUrl.searchParams.get('patient_id');
-  let query = supabase.from('consultation').select('*');
+  const id = req.nextUrl.searchParams.get('id');
+  let query = supabase.from('consultation').select(`
+      *,
+      pathologies: pathology_id (name),
+      pathology_system: pathology_system_id (name)
+    `);
 
   if (id_patient) {
     query = query.eq('patient_id', id_patient);
+  }
+
+  if (id) {
+    query = query.eq('id', id);
   }
 
   const { data, error } = await query;

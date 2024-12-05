@@ -66,40 +66,42 @@ export const ViewConsult: React.FC<ViewConsultProps> = ({ children, id }) => {
               <div>{consult.temperature}</div>
             </div>
             <div>
-              <div className="font-bold">Patologia</div>
-              <div>{consult.pathology.name}</div>
+              <div className="font-bold">Patología</div>
+              <div>{consult.pathology_id.name}</div>{' '}
+              {/* Cambiado de consult.pathologies.name a consult.pathology_id.name */}
             </div>
             <div>
-              <div className="font-bold">Historial Medico</div>
-              <div>{consult.medical_history ? 'Si' : 'No'}</div>
+              <div className="font-bold">Sistema Patológico</div>
+              <div>{consult.pathology_system_id.name}</div>{' '}
+              {/* Cambiado de consult.pathology_system.name a consult.pathology_system_id.name */}
+            </div>
+            <div>
+              <div className="font-bold">Historial Médico</div>
+              <div>{consult.medical_history ? 'Sí' : 'No'}</div>
             </div>
             <div>
               <div className="font-bold">Fuma</div>
-              <div>{consult.smoke ? 'Si' : 'No'}</div>
+              <div>{consult.smoke ? 'Sí' : 'No'}</div>
             </div>
             <div>
               <div className="font-bold">Bebe</div>
-              <div>{consult.drink ? 'Si' : 'No'}</div>
+              <div>{consult.drink ? 'Sí' : 'No'}</div>
             </div>
             <div>
               <div className="font-bold">Alergico</div>
-              <div>{consult.allergic ? 'Si' : 'No'}</div>
+              <div>{consult.allergic ? 'Sí' : 'No'}</div>
             </div>
             <div>
               <div className="font-bold">Discapacidad</div>
-              <div>{consult.discapacity ? 'Si' : 'No'}</div>
+              <div>{consult.discapacity ? 'Sí' : 'No'}</div>
             </div>
             <div>
               <div className="font-bold">Reposo</div>
-              <div>{consult.recipe_url ? 'Si posee' : 'No posee'}</div>
+              <div>{consult.recipe_url ? 'Sí posee' : 'No posee'}</div>
             </div>
             <div>
               <div className="font-bold">Actualizado</div>
               <div>{formatDateConsult(consult.updated_at)}</div>
-            </div>
-            <div>
-              <div className="font-bold">Sistema Patologico</div>
-              <div>{consult.pathology_system_id ? consult.pathology_system_id.name : 'N/A'}</div>
             </div>
           </div>
         )}
