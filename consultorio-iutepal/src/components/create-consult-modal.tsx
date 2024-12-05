@@ -29,6 +29,7 @@ interface ConsultCreateModalProps {
   title: string;
   sub: string;
   onRefresh: () => void;
+  isStudent: boolean;
 }
 
 interface Pathology {
@@ -54,7 +55,7 @@ const FormSchema = z.object({
   recipe_url: z.string().optional(),
 });
 
-export function ConsultCreateModal({ children, id, title, sub, onRefresh }: ConsultCreateModalProps) {
+export function ConsultCreateModal({ children, id, title, sub, onRefresh, isStudent }: ConsultCreateModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [unit, setUnit] = useState('cm');
   const [hasReposo, setHasReposo] = useState(false);
@@ -466,14 +467,16 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh }: Cons
                   </FormItem>
                 )}
               />
-              <FormItem className="flex items-center space-x-2">
-                <FormControl>
-                  <Checkbox checked={hasReposo} onCheckedChange={(checked) => setHasReposo(checked === true)} />
-                </FormControl>
-                <FormLabel>El paciente tiene algun tipo de reposo/recipe?</FormLabel>
-              </FormItem>
+              {!isStudent && (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox checked={hasReposo} onCheckedChange={(checked) => setHasReposo(checked === true)} />
+                  </FormControl>
+                  <FormLabel>El paciente tiene algun tipo de reposo/recipe?</FormLabel>
+                </FormItem>
+              )}
             </div>
-            {hasReposo && (
+            {hasReposo && !isStudent && (
               <FormField
                 control={form.control}
                 name="recipe_url"

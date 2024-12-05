@@ -87,6 +87,26 @@ export default function Page() {
     }
   };
 
+  const handleCreatePdf = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/reposos', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!res.ok) {
+        throw new Error('Error creating recipe');
+      }
+      const newRecipe = await res.json();
+      setReposos((prevReposos) => [...prevReposos, newRecipe]);
+    } catch (error) {
+      console.error('Error creating recipe:', error);
+    }
+  };
+
   return (
     <section>
       <div className="mt-4 flex justify-end space-x-5 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -129,7 +149,7 @@ export default function Page() {
             <DialogHeader>
               <DialogTitle>Crear reposo</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="grid gap-4 py-4" encType="multipart/form-data">
+            <form onSubmit={handleCreatePdf} className="grid gap-4 py-4" encType="multipart/form-data">
               <div className="items-center gap-4 space-y-3">
                 <Label htmlFor="patient_name" className="text-right">
                   Nombre del Paciente

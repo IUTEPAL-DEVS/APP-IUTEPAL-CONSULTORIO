@@ -27,6 +27,7 @@ import { columns } from './columns';
 import { ConsultCreateModal } from '@/src/components/create-consult-modal';
 import { useParams } from 'next/navigation';
 import { translateColumnId } from '@/src/lib/utils';
+import { Patients } from '@/src/types/patient';
 
 export function DataTablePatienConsult() {
   const { id } = useParams() as { id: string };
@@ -38,6 +39,7 @@ export function DataTablePatienConsult() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [refresh, setRefresh] = React.useState(false);
+  const [patient, setPatient] = React.useState<Patients | null>(null);
 
   const handleRefresh = () => {
     setRefresh(!refresh);
@@ -53,6 +55,15 @@ export function DataTablePatienConsult() {
     }
     fetchData();
   }, [refresh, id]);
+
+  React.useEffect(() => {
+    async function fetchPatient() {
+      const response = await fetch(`/api/pacientes?id=${id}`);
+      const result = await response.json();
+      setPatient(result.data[0] || null);
+    }
+    fetchPatient();
+  }, [id]);
 
   const table = useReactTable({
     data: data,
@@ -111,7 +122,13 @@ export function DataTablePatienConsult() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <ConsultCreateModal id={id} onRefresh={handleRefresh} title="Crear nueva consulta" sub="no se que es esto?">
+          <ConsultCreateModal
+            id={id}
+            onRefresh={handleRefresh}
+            title="Crear nueva consulta"
+            sub="no se que es esto?"
+            isStudent={patient?.charge === 'Estudiante'}
+          >
             <Button className="ml-5">Agregar Nueva Consulta</Button>
           </ConsultCreateModal>
         </div>
