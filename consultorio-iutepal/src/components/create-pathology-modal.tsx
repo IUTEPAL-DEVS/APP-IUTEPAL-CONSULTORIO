@@ -88,6 +88,7 @@ export function CreatePathologyModal({ children, title, onRefresh }: ConsultCrea
         onRefresh();
       }
 
+      form.reset(); // Limpiar el formulario
       setIsOpen(false); // Cerrar el modal
     } catch (error) {
       console.error('Error en la solicitud POST:', error); // Agregar esta línea para depuración

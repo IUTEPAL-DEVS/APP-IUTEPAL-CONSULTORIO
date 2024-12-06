@@ -12,8 +12,8 @@ export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   let query = supabase.from('consultation').select(`
       *,
-      pathologies: pathology_id (name),
-      pathology_system: pathology_system_id (name)
+      pathology_id (name),
+      pathology_system_id (name)
     `);
 
   if (id_patient) {
