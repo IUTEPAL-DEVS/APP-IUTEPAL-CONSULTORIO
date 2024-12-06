@@ -26,7 +26,8 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData();
   const file = formData.get('file') as File;
-  const patient_name = formData.get('patient_name') as string;
+  const patient_id = formData.get('patient_id') as string;
+  const description = formData.get('description') as string;
 
   if (!file) {
     return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
   // Guardar la URL en la base de datos
   const { data, error } = await supabase
     .from('recipe')
-    .insert([{ recipe_url: fileUrl, patient_name }])
+    .insert([{ recipe_url: fileUrl, patient_id, description }])
     .select();
 
   if (error) {
