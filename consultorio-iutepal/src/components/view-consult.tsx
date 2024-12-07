@@ -32,11 +32,11 @@ export const ViewConsult: React.FC<ViewConsultProps> = ({ children, id }) => {
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className="h-5/6 max-w-xl">
-        <DialogTitle className="text-3xl">Datos de la Consulta</DialogTitle>
+      <DialogContent className="h-auto max-w-xl">
+        <DialogTitle className="mb-4 text-3xl">Datos de la Consulta</DialogTitle>
 
         {consult && (
-          <div className="mt-[-180px] grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <div className="font-bold">Fecha de Consulta</div>
               <div>{formatDateConsult(consult.created_at)}</div>
@@ -67,13 +67,11 @@ export const ViewConsult: React.FC<ViewConsultProps> = ({ children, id }) => {
             </div>
             <div>
               <div className="font-bold">Patología</div>
-              <div>{consult.pathology_id.name}</div>{' '}
-              {/* Cambiado de consult.pathologies.name a consult.pathology_id.name */}
+              <div>{consult.pathology_id.name}</div>
             </div>
             <div>
               <div className="font-bold">Sistema Patológico</div>
-              <div>{consult.pathology_system_id.name}</div>{' '}
-              {/* Cambiado de consult.pathology_system.name a consult.pathology_system_id.name */}
+              <div>{consult.pathology_system_id.name}</div>
             </div>
             <div>
               <div className="font-bold">Historial Médico</div>

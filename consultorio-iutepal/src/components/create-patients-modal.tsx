@@ -143,11 +143,11 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:h-2/3 sm:max-w-3xl">
+      <DialogContent className="sm:h-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="text-xl">{title}</DialogTitle>
           <DialogDescription>
-            Asegurese de ingresar todos los datos necesarios para la {sub} paciente.
+            Asegúrese de ingresar todos los datos necesarios para la {sub} paciente.
           </DialogDescription>
         </DialogHeader>
         {isLoading ? (
@@ -155,20 +155,20 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cedula</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+                <FormField
+                  control={form.control}
+                  name="id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cédula</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="firts_name"
@@ -235,7 +235,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="Estudiante">Estudiante</SelectItem>
-                          <SelectItem value="Administracion">Administracion</SelectItem>
+                          <SelectItem value="Administracion">Administración</SelectItem>
                           <SelectItem value="Docente">Docente</SelectItem>
                         </SelectContent>
                       </Select>
@@ -248,7 +248,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                   name="direction"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Direccion Corta</FormLabel>
+                      <FormLabel>Dirección Corta</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -261,7 +261,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Telefono celular</FormLabel>
+                      <FormLabel>Teléfono Celular</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -274,7 +274,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Correo electronico</FormLabel>
+                      <FormLabel>Correo Electrónico</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>

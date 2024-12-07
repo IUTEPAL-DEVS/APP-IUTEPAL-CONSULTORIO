@@ -23,13 +23,13 @@ export const ViewPatients: React.FC<ViewPatientsProps> = ({ children, id }) => {
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className="h-4/6 max-w-xl">
-        <DialogTitle className="text-3xl">Datos del paciente</DialogTitle>
+      <DialogContent className="h-auto max-w-xl">
+        <DialogTitle className="mb-4 text-3xl">Datos del paciente</DialogTitle>
 
         {patient && (
-          <div className="mt-[-210px] grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <h4 className="text-lg font-semibold text-primary">Cedula</h4>
+              <h4 className="text-lg font-semibold text-primary">Cédula</h4>
               <p>{patient.id}</p>
             </div>
             <div>

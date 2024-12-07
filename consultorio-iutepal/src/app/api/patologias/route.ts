@@ -69,3 +69,24 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ data });
 }
+export async function DELETE(req: NextRequest) {
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient({
+    cookies: () => cookieStore,
+  });
+
+  const { id: pathologyId } = await req.json();
+
+  if (!pathologyId) {
+    return NextResponse.json({ error: 'El ID de la patología es obligatorio.' }, { status: 400 });
+  }
+
+  const { data, error } = await supabase.from('pathologies').delete().eq('id', pathologyId);
+
+  if (error) {
+    console.log('Error al eliminar la patología:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  return NextResponse.json({ data });
+}
