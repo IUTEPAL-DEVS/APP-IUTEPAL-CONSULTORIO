@@ -5,6 +5,7 @@ import { capitalizeFirstLetter } from '@/src/lib/utils';
 import { PathologySystem } from '@/src/types/system-pathology';
 import { PlusIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { ConfirmDeleteModal } from '@/src/components/confirm-delete-modal';
 
 interface Pathology {
   id: number;
@@ -53,6 +54,26 @@ export default function Page() {
     setCurrentPage(newPage);
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch('/api/patologias', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      if (response.ok) {
+        setPathologies((prevPathologies) => prevPathologies.filter((pathology) => pathology.id !== id));
+      } else {
+        console.error('Error deleting pathology');
+      }
+    } catch (error) {
+      console.error('Error deleting pathology:', error);
+    }
+  };
+
   const filteredPathologies = pathologies.filter((pathology) => pathology.pathology_system_id === selectedSystem);
   const totalPages = Math.ceil(filteredPathologies.length / ITEMS_PER_PAGE);
   const displayedPathologies = filteredPathologies.slice(
@@ -93,8 +114,14 @@ export default function Page() {
             {displayedPathologies.length > 0 ? (
               <ul className="space-y-2">
                 {displayedPathologies.map((pathology) => (
-                  <li key={pathology.id} className="rounded-md border border-gray-300 bg-white p-4 shadow-sm">
+                  <li
+                    key={pathology.id}
+                    className="flex justify-between rounded-md border border-gray-300 bg-white p-4 shadow-sm"
+                  >
                     {capitalizeFirstLetter(pathology.name)}
+                    <ConfirmDeleteModal onConfirm={() => handleDelete(pathology.id)}>
+                      <button className="text-red-500">X</button>
+                    </ConfirmDeleteModal>
                   </li>
                 ))}
               </ul>
