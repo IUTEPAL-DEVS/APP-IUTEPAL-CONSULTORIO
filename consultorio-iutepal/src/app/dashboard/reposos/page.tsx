@@ -8,6 +8,7 @@ import { Input } from '@/src/components/ui/input';
 import Link from 'next/link';
 import { Textarea } from '@/src/components/ui/textarea';
 import { UploadRecipeModal } from '@/src/components/upload-recipe-modal';
+import { CreateRecipeModal } from '@/src/components/create-recipe-modal';
 
 interface Reposo {
   id: string;
@@ -91,37 +92,9 @@ export default function Page() {
         <UploadRecipeModal>
           <Button variant="default">Importar Reposo</Button>
         </UploadRecipeModal>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="default">Crear nuevo reposo</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] lg:max-w-xl">
-            <DialogHeader>
-              <DialogTitle>Crear reposo</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleCreatePdf} className="grid gap-4 py-4" encType="multipart/form-data">
-              <div className="items-center gap-4 space-y-3">
-                <Label htmlFor="patient_name" className="text-right">
-                  Nombre del Paciente
-                </Label>
-                <Input
-                  id="patient_name"
-                  name="patient_name"
-                  value={formData.patient_name}
-                  onChange={handleChange}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="items-center gap-4 space-y-3">
-                <Label htmlFor="description" className="text-right">
-                  Asunto
-                </Label>
-                <Textarea placeholder="asunto del reposo" />
-              </div>
-              <Button type="submit">Registrar reposo</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <CreateRecipeModal>
+          <Button variant="default">Crear nuevo reposo</Button>
+        </CreateRecipeModal>
       </div>
       {loading ? (
         <p className="mt-3">Cargando reposos...</p>
