@@ -70,6 +70,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
     resolver: zodResolver(FormSchema),
     defaultValues: {
       phone: '+58', // Valor por defecto para el teléfono celular
+      dob: new Date(), // Valor por defecto para la fecha de nacimiento
     },
   });
 
@@ -151,7 +152,7 @@ export function PatientsCreateModal({ children, id, title, sub, onRefresh }: Pat
           </DialogDescription>
         </DialogHeader>
         {isLoading ? (
-          <span className="loader"></span>
+          <span className="loader m-auto"></span>
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

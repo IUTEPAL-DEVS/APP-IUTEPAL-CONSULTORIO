@@ -53,7 +53,6 @@ export const UploadRecipeModal: React.FC<UploadRecipeModalProps> = ({ children }
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log('Datos del formulario:', data);
     const formDataToSend = new FormData();
     formDataToSend.append('file', data.recipe_url);
     formDataToSend.append('patient_id', data.patient_id.toString());

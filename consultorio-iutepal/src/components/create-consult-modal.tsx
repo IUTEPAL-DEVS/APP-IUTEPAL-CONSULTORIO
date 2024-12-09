@@ -484,7 +484,39 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh, isStud
                   <FormItem>
                     <FormLabel>Reposo</FormLabel>
                     <FormControl>
-                      <Input type="file" {...field} value={field.value || ''} />
+                      <Input
+                        type="file"
+                        onChange={async (e) => {
+                          const files = e.target.files;
+                          if (files && files[0]) {
+                            const file = files[0];
+                            const formData = new FormData();
+                            formData.append('file', file);
+
+                            try {
+                              const res = await fetch('/api/reposos', {
+                                method: 'POST',
+                                body: formData,
+                              });
+                              const data = await res.json();
+                              if (res.ok) {
+                                field.onChange(data.url); // Assuming the response contains the URL
+                              } else {
+                                toast({
+                                  title: 'Error',
+                                  description: 'Error uploading file',
+                                });
+                              }
+                            } catch (error) {
+                              console.error('Error uploading file:', error);
+                              toast({
+                                title: 'Error',
+                                description: 'Error uploading file',
+                              });
+                            }
+                          }
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
