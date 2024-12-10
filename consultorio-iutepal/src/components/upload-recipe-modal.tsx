@@ -72,8 +72,8 @@ export const UploadRecipeModal = ({ children, onRecipeImported }: UploadRecipeMo
         toast({
           title: 'Reposo importado',
         });
-        onRecipeImported(); // Llamar al callback para actualizar la vista
-        setIsOpen(false); // Cerrar el modal
+        onRecipeImported(); // Llama al callback
+        setIsOpen(false);
       } else {
         const json = await res.json();
         toast(json.error);

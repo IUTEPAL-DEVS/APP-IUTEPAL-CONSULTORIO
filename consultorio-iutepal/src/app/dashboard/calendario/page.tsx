@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { format, isBefore, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Pencil, Plus, Trash } from 'lucide-react';
+import { Check, ChevronsUpDown, Pencil, Plus, Trash } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { Button } from '@/src/components/ui/button';
 import { Calendar } from '@/src/components/ui/calendar';
@@ -13,6 +13,10 @@ import { ScrollArea } from '@/src/components/ui/scroll-area';
 import { EditEventModal } from '@/src/components/edit-event-modal';
 import { DeleteEventModal } from '@/src/components/delete-event-modal';
 import { toast } from '@/src/hooks/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover';
+import { cn } from '@/src/lib/utils';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/src/components/ui/command';
+import { Patients } from '@/src/types/patient';
 
 interface Event {
   id?: string;
@@ -30,6 +34,23 @@ export default function ExpandedCalendar() {
   const [newEventTime, setNewEventTime] = React.useState('');
   const [newEventDescription, setNewEventDescription] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
+  const [patients, setPatients] = React.useState<Patients[]>([]);
+  const [selectedPatient, setSelectedPatient] = React.useState<string | undefined>(undefined);
+
+  React.useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const res = await fetch('/api/pacientes');
+        const data = await res.json();
+        setPatients(data.data);
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      }
+    };
+
+    fetchPatients();
+  }, []);
 
   const fetchEvents = async () => {
     const response = await fetch('/api/eventos');
@@ -48,14 +69,14 @@ export default function ExpandedCalendar() {
   }, []);
 
   const addEvent = async () => {
-    if (date && newEventTitle.trim() !== '' && newEventTime.trim() !== '') {
+    if (date && newEventTitle.trim() !== '' && newEventTime.trim() !== '' && selectedPatient) {
       setIsLoading(true);
       const newEvent: Omit<Event, 'id'> = {
         title: newEventTitle,
         date_time: date,
         time: newEventTime,
         description: newEventDescription,
-        id_patient: undefined,
+        id_patient: selectedPatient,
       };
       const response = await fetch('/api/eventos', {
         method: 'POST',
@@ -71,6 +92,7 @@ export default function ExpandedCalendar() {
       setNewEventTitle('');
       setNewEventTime('');
       setNewEventDescription('');
+      setSelectedPatient(undefined);
       setIsLoading(false);
       fetchEvents();
       toast({
@@ -154,26 +176,29 @@ export default function ExpandedCalendar() {
           <ScrollArea className="h-[250px]">
             {filteredEvents.length > 0 ? (
               <ul className="space-y-2">
-                {filteredEvents.map((event) => (
-                  <li key={event.id} className="flex items-center rounded-md bg-secondary p-2">
-                    Titulo del evento: <span className="mx-2 font-semibold text-primary">{event.title}</span> -
-                    Descripcion: <span className="mx-2 font-semibold text-primary"> {event.description}</span> - Hora
-                    estimada de la cita:{' '}
-                    <span className="mx-2 font-semibold text-primary"> {formatTime(event.time)}</span>
-                    <div className="-mt-2 ml-auto flex items-center gap-4">
-                      <EditEventModal event={event} onSave={editEvent} onClose={() => {}}>
-                        <Button variant={'ghost'} className="mt-2 p-0">
-                          <Pencil />
-                        </Button>
-                      </EditEventModal>
-                      <DeleteEventModal id={event.id!} onDelete={deleteEvent}>
-                        <Button variant={'ghost'} className="mt-2 p-0">
-                          <Trash className="stroke-destructive" />
-                        </Button>
-                      </DeleteEventModal>
-                    </div>
-                  </li>
-                ))}
+                {filteredEvents.map((event) => {
+                  const patient = patients.find((p) => p.id === event.id_patient);
+                  return (
+                    <li key={event.id} className="flex items-center rounded-md bg-secondary p-2">
+                      Titulo del evento: <span className="mx-2 font-semibold text-primary">{event.title}</span> -
+                      Descripcion: <span className="mx-2 font-semibold text-primary"> {event.description}</span> - Hora
+                      estimada de la cita: <span className="mx-2 font-semibold text-primary"> {formatTime(event.time)}</span> -
+                      Paciente: <span className="mx-2 font-semibold text-primary">{patient ? patient.firts_name + ' ' + patient.last_name : 'N/A'}</span>
+                      <div className="-mt-2 ml-auto flex items-center gap-4">
+                        <EditEventModal event={event} onSave={editEvent} onClose={() => { }}>
+                          <Button variant={'ghost'} className="mt-2 p-0">
+                            <Pencil />
+                          </Button>
+                        </EditEventModal>
+                        <DeleteEventModal id={event.id!} onDelete={deleteEvent}>
+                          <Button variant={'ghost'} className="mt-2 p-0">
+                            <Trash className="stroke-destructive" />
+                          </Button>
+                        </DeleteEventModal>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <p className="text-muted-foreground">No existen eventos creados hasta el momento.</p>
@@ -208,6 +233,52 @@ export default function ExpandedCalendar() {
               value={newEventDescription}
               onChange={(e) => setNewEventDescription(e.target.value)}
             />
+          </div>
+          <div className="w-full flex flex-col mt-1 space-y-1">
+            <Label htmlFor="new-event-description">Paciente</Label>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className="justify-between"
+                  aria-expanded={open}
+                >
+                  {selectedPatient
+                  ? patients.find((patient) => patient.id.toString() === selectedPatient)?.firts_name + ' ' + patients.find((patient) => patient.id.toString() === selectedPatient)?.last_name
+                  : "Seleccione un paciente..."}
+                  <ChevronsUpDown className="opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="Buscar..." />
+                  <CommandList>
+                    <CommandEmpty>No se encontró ningún paciente registrado.</CommandEmpty>
+                    <CommandGroup>
+                      {patients.map((patient) => (
+                        <CommandItem
+                          key={patient.id}
+                          value={patient.id.toString()}
+                          onSelect={(currentValue) => {
+                            setSelectedPatient(currentValue === selectedPatient ? undefined : currentValue);
+                            setOpen(false);
+                          }}
+                        >
+                          {patient.firts_name}  {patient.last_name}
+                          <Check
+                            className={cn(
+                              "ml-auto",
+                              patient.id.toString() === selectedPatient ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
           <Button
             onClick={addEvent}

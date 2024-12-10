@@ -13,6 +13,11 @@ import {
 } from './ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { Patients } from '../types/patient';
+import { cn } from '../lib/utils';
 
 interface Event {
   id?: string;
@@ -36,9 +41,32 @@ export const EditEventModal: React.FC<EditEventModalProps> = ({ children, event,
   const [newEventDescription, setNewEventDescription] = React.useState(event.description || '');
   const [isError, setIsError] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [patients, setPatients] = React.useState<Patients[]>([]);
+  const [selectedPatient, setSelectedPatient] = React.useState<string | undefined>(event.id_patient);
+
+  React.useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const res = await fetch('/api/pacientes');
+        const data = await res.json();
+        setPatients(data.data);
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      }
+    };
+
+    fetchPatients();
+  }, []);
 
   const handleSave = () => {
-    const updatedEvent = { ...event, title: newEventTitle, time: newEventTime, description: newEventDescription };
+    const updatedEvent = { 
+      ...event, 
+      title: newEventTitle, 
+      time: newEventTime, 
+      description: newEventDescription,
+      id_patient: selectedPatient 
+    };
     onSave(updatedEvent);
     setIsSuccess(true);
   };
@@ -70,6 +98,52 @@ export const EditEventModal: React.FC<EditEventModalProps> = ({ children, event,
             value={newEventDescription}
             onChange={(e) => setNewEventDescription(e.target.value)}
           />
+        </div>
+        <div className="w-full flex flex-col mt-1 space-y-1">
+          <Label htmlFor="new-event-description">Paciente</Label>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                className="justify-between"
+                aria-expanded={open}
+              >
+                {selectedPatient
+                  ? patients.find((patient) => patient.id.toString() === selectedPatient)?.firts_name + ' ' + patients.find((patient) => patient.id.toString() === selectedPatient)?.last_name
+                  : "Seleccione un paciente..."}
+                <ChevronsUpDown className="opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="Buscar..." />
+                <CommandList>
+                  <CommandEmpty>No se encontró ningún paciente registrado.</CommandEmpty>
+                  <CommandGroup>
+                    {patients.map((patient) => (
+                      <CommandItem
+                        key={patient.id}
+                        value={patient.id.toString()}
+                        onSelect={(currentValue) => {
+                          setSelectedPatient(currentValue === selectedPatient ? undefined : currentValue);
+                          setOpen(false);
+                        }}
+                      >
+                        {patient.firts_name} {patient.last_name}
+                        <Check
+                          className={cn(
+                            "ml-auto",
+                            patient.id.toString() === selectedPatient ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
         <DialogFooter>
           <DialogClose asChild>
