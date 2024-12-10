@@ -67,7 +67,7 @@ export function DataTablePatienConsult() {
 
   const table = useReactTable({
     data: data,
-    columns: columns(),
+    columns: columns({ handleRefresh, patient: patient || {} as Patients }),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

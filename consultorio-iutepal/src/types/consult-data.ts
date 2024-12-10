@@ -7,6 +7,7 @@ export interface ConsultData {
   blood_type: string;
   temperature: number;
   pathology_id: {
+    id: number;
     name: string;
   };
   reason_consultation: string;
@@ -16,9 +17,10 @@ export interface ConsultData {
   drink: boolean;
   allergic: boolean;
   discapacity: boolean;
-  recipe_url: string;
+  recipe_url: string | File;
   updated_at: string;
   pathology_system_id: {
+    id: number;
     name: string;
   };
 }
