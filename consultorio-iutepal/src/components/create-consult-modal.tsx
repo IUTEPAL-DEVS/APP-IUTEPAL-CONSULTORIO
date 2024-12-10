@@ -22,6 +22,7 @@ import { Checkbox } from './ui/checkbox';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { PathologySystem } from '../types/system-pathology';
+import { formattedDate } from '../lib/utils';
 
 interface ConsultCreateModalProps {
   children: React.ReactNode;
@@ -52,7 +53,7 @@ const FormSchema = z.object({
   drink: z.boolean().optional(),
   allergic: z.boolean().optional(),
   discapacity: z.boolean().optional(),
-  recipe_url: z.string().optional(),
+  recipe_url: z.instanceof(File).optional(),
 });
 
 export function ConsultCreateModal({ children, id, title, sub, onRefresh, isStudent }: ConsultCreateModalProps) {
@@ -148,9 +149,36 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh, isStud
     setIsLoading(true);
 
     try {
+      let recipeUrl = null;
+
+      if (data.recipe_url) {
+        const formData = new FormData();
+        formData.append('file', data.recipe_url);
+        formData.append('patient_id', id || '');
+        formData.append('description', `Reposo subido desde consultas ${formattedDate}`);
+
+        const res = await fetch('/api/reposos', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const result = await res.json();
+
+        if (!res.ok) {
+          toast({
+            title: 'Error',
+            description: result.error,
+          });
+          return;
+        }
+
+        recipeUrl = result.recipe_url;
+      }
+
       const payload = {
         ...data,
         patient_id: id,
+        recipe_url: recipeUrl,
       };
 
       const response = await fetch(`/api/consultas?patient_id=${id}`, {
@@ -484,39 +512,7 @@ export function ConsultCreateModal({ children, id, title, sub, onRefresh, isStud
                   <FormItem>
                     <FormLabel>Reposo</FormLabel>
                     <FormControl>
-                      <Input
-                        type="file"
-                        onChange={async (e) => {
-                          const files = e.target.files;
-                          if (files && files[0]) {
-                            const file = files[0];
-                            const formData = new FormData();
-                            formData.append('file', file);
-
-                            try {
-                              const res = await fetch('/api/reposos', {
-                                method: 'POST',
-                                body: formData,
-                              });
-                              const data = await res.json();
-                              if (res.ok) {
-                                field.onChange(data.url); // Assuming the response contains the URL
-                              } else {
-                                toast({
-                                  title: 'Error',
-                                  description: 'Error uploading file',
-                                });
-                              }
-                            } catch (error) {
-                              console.error('Error uploading file:', error);
-                              toast({
-                                title: 'Error',
-                                description: 'Error uploading file',
-                              });
-                            }
-                          }
-                        }}
-                      />
+                      <Input type="file" onChange={(e) => field.onChange(e.target.files?.[0])} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

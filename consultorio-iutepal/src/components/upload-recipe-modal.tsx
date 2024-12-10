@@ -1,9 +1,8 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn, formattedDate } from '../lib/utils';
 import { Button } from '@/src/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/src/components/ui/dialog';
-import { Input } from '@/src/components/ui/input';
-import { Patients } from '@/src/types/patient';
 import {
   Form,
   FormControl,
@@ -13,17 +12,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@/src/components/ui/form';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
+import { Input } from '@/src/components/ui/input';
 import { z } from 'zod';
+import { useEffect, useState } from 'react';
+import { Patients } from '../types/patient';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from '@/src/hooks/use-toast';
-import { cn } from '../lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
+import { toast } from '../hooks/use-toast';
 
 interface UploadRecipeModalProps {
   children: React.ReactNode;
+  onRecipeImported: () => void; // Callback para actualizar la vista
 }
 
 const FormSchema = z.object({
@@ -31,8 +32,10 @@ const FormSchema = z.object({
   patient_id: z.number(),
 });
 
-export const UploadRecipeModal: React.FC<UploadRecipeModalProps> = ({ children }) => {
+export const UploadRecipeModal = ({ children, onRecipeImported }: UploadRecipeModalProps) => {
   const [patients, setPatients] = useState<Patients[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -53,22 +56,26 @@ export const UploadRecipeModal: React.FC<UploadRecipeModalProps> = ({ children }
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const formDataToSend = new FormData();
-    formDataToSend.append('file', data.recipe_url);
-    formDataToSend.append('patient_id', data.patient_id.toString());
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', data.recipe_url);
+    formData.append('patient_id', data.patient_id.toString());
+    formData.append('description', `Subido desde la vista de reposos ${formattedDate}`);
 
     try {
       const res = await fetch('/api/reposos', {
         method: 'POST',
-        body: formDataToSend,
+        body: formData,
       });
-      const json = await res.json();
 
       if (res.ok) {
         toast({
           title: 'Reposo importado',
         });
+        onRecipeImported(); // Llamar al callback para actualizar la vista
+        setIsOpen(false); // Cerrar el modal
       } else {
+        const json = await res.json();
         toast(json.error);
       }
     } catch (error) {
@@ -77,11 +84,13 @@ export const UploadRecipeModal: React.FC<UploadRecipeModalProps> = ({ children }
         title: 'Error al importar el reposo',
         variant: 'destructive',
       });
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px] lg:max-w-xl">
         <DialogHeader>
@@ -152,12 +161,14 @@ export const UploadRecipeModal: React.FC<UploadRecipeModalProps> = ({ children }
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  <FormDescription>Puede escoger un paciente para importar el reposo.</FormDescription>
+                  <FormDescription>Seleccione un paciente para importar el reposo.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Importar</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Cargando...' : 'Importar reposo'}
+            </Button>
           </form>
         </Form>
       </DialogContent>

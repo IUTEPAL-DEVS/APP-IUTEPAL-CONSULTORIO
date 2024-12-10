@@ -36,3 +36,8 @@ export const formatDateConsult = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   return new Date(dateString).toLocaleDateString('es-ES', options);
 };
+
+export const formattedDate = new Intl.DateTimeFormat('es-ES', {
+  dateStyle: 'full',
+  timeStyle: 'long',
+}).format(new Date());
