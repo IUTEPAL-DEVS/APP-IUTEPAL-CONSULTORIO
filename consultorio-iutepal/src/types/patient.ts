@@ -11,4 +11,5 @@ export interface Patients {
   email: string; //correo
   sex: string; //sexo
   age: string; //edad
+  created_at: string; //fecha de consulta
 }

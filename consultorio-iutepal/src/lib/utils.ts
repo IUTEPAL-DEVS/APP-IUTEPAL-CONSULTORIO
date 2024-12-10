@@ -41,3 +41,21 @@ export const formattedDate = new Intl.DateTimeFormat('es-ES', {
   dateStyle: 'full',
   timeStyle: 'long',
 }).format(new Date());
+
+export const getInitialChartData = () => {
+  const months = [
+    'enero',
+    'febrero',
+    'marzo',
+    'abril',
+    'mayo',
+    'junio',
+    'julio',
+    'agosto',
+    'septiembre',
+    'octubre',
+    'noviembre',
+    'diciembre',
+  ];
+  return months.map((month) => ({ month, desktop: 0 }));
+};
