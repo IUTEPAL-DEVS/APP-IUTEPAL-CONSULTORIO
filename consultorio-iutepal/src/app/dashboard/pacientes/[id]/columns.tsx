@@ -16,7 +16,13 @@ import { ViewConsult } from '@/src/components/view-consult';
 import { ConsultUpdateModal } from '@/src/components/update-conuslt-modal';
 import { Patients } from '@/src/types/patient';
 
-export function columns({ handleRefresh, patient }: { handleRefresh: () => void, patient: Patients }): ColumnDef<ConsultData>[] {
+export function columns({
+  handleRefresh,
+  patient,
+}: {
+  handleRefresh: () => void;
+  patient: Patients;
+}): ColumnDef<ConsultData>[] {
   return [
     {
       accessorKey: 'created_at',
@@ -86,23 +92,27 @@ export function columns({ handleRefresh, patient }: { handleRefresh: () => void,
                     <p>Ver Datos completos</p>
                   </Button>
                 </ViewConsult>
-                <ConsultUpdateModal initialData={{
-                      height: row.original.height,
-                      weight: row.original.weight,
-                      blood_type: row.original.blood_type,
-                      temperature: row.original.temperature,
-                      pathology_system_id: row.original.pathology_system_id.id,
-                      pathology_id: row.original.pathology_id.id,
-                      reason_consultation: row.original.reason_consultation,
-                      diagnosis: row.original.diagnosis,
-                      medical_history: row.original.medical_history,
-                      smoke: row.original.smoke,
-                      drink: row.original.drink,
-                      allergic: row.original.allergic,
-                      discapacity: row.original.discapacity,
-                      recipe_url: new File([row.original.recipe_url], "recipe.pdf", { type: "text/plain" }),
-                }} isStudent={patient?.charge === 'Estudiante'}
-                  onRefresh={handleRefresh} id={consultId}>
+                <ConsultUpdateModal
+                  initialData={{
+                    height: row.original.height,
+                    weight: row.original.weight,
+                    blood_type: row.original.blood_type,
+                    temperature: row.original.temperature,
+                    pathology_system_id: row.original.pathology_system_id.id,
+                    pathology_id: row.original.pathology_id.id,
+                    reason_consultation: row.original.reason_consultation,
+                    diagnosis: row.original.diagnosis,
+                    medical_history: row.original.medical_history,
+                    smoke: row.original.smoke,
+                    drink: row.original.drink,
+                    allergic: row.original.allergic,
+                    discapacity: row.original.discapacity,
+                    recipe_url: new File([row.original.recipe_url], 'recipe.pdf', { type: 'text/plain' }),
+                  }}
+                  isStudent={patient?.charge === 'Estudiante'}
+                  onRefresh={handleRefresh}
+                  id={consultId}
+                >
                   <Button variant={'ghost'}>
                     <p>Modificar Datos</p>
                   </Button>
