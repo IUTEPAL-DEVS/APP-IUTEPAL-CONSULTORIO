@@ -94,20 +94,20 @@ export function columns({
                 </ViewConsult>
                 <ConsultUpdateModal
                   initialData={{
-                    height: row.original.height,
-                    weight: row.original.weight,
+                    height: row.original.height ? Number(row.original.height) : null,
+                    weight: row.original.weight ? Number(row.original.weight) : null,
                     blood_type: row.original.blood_type,
-                    temperature: row.original.temperature,
+                    temperature: row.original.temperature ? Number(row.original.temperature) : null,
                     pathology_system_id: row.original.pathology_system_id.id,
                     pathology_id: row.original.pathology_id.id,
                     reason_consultation: row.original.reason_consultation,
                     diagnosis: row.original.diagnosis,
-                    medical_history: row.original.medical_history,
-                    smoke: row.original.smoke,
-                    drink: row.original.drink,
-                    allergic: row.original.allergic,
-                    discapacity: row.original.discapacity,
-                    recipe_url: new File([row.original.recipe_url], 'recipe.pdf', { type: 'text/plain' }),
+                    medical_history: row.original.medical_history ?? false,
+                    smoke: row.original.smoke ?? false,
+                    drink: row.original.drink ?? false,
+                    allergic: row.original.allergic ?? false,
+                    discapacity: row.original.discapacity ?? false,
+                    recipe_url: typeof row.original.recipe_url === 'string' ? undefined : row.original.recipe_url,
                   }}
                   isStudent={patient?.charge === 'Estudiante'}
                   onRefresh={handleRefresh}

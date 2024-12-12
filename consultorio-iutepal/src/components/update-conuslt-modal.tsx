@@ -39,20 +39,20 @@ interface Pathology {
 }
 
 const FormSchema = z.object({
-  height: z.number().nullable(),
-  weight: z.number().nullable(),
-  blood_type: z.string().nullable(),
-  temperature: z.number().nullable(),
-  pathology_system_id: z.number().nullable(),
-  pathology_id: z.number().nullable(),
-  reason_consultation: z.string().nullable(),
-  diagnosis: z.string().nullable(),
+  height: z.number().nullable().optional(),
+  weight: z.number().nullable().optional(),
+  blood_type: z.string().nullable().optional(),
+  temperature: z.number().nullable().optional(),
+  pathology_system_id: z.number().nullable().optional(),
+  pathology_id: z.number().nullable().optional(),
+  reason_consultation: z.string().nullable().optional(),
+  diagnosis: z.string().nullable().optional(),
   medical_history: z.boolean().optional(),
   smoke: z.boolean().optional(),
   drink: z.boolean().optional(),
   allergic: z.boolean().optional(),
   discapacity: z.boolean().optional(),
-  recipe_url: z.instanceof(File).optional(),
+  recipe_url: z.instanceof(File).nullable().optional(),
 });
 
 export function ConsultUpdateModal({ children, id, onRefresh, isStudent, initialData }: ConsultUpdateModalProps) {
@@ -340,7 +340,7 @@ export function ConsultUpdateModal({ children, id, onRefresh, isStudent, initial
                 name="pathology_system_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sistema de Patología</FormLabel>
+                    <FormLabel>Sistema Patológico</FormLabel>
                     <Select
                       onValueChange={(value) => {
                         const systemId = parseInt(value);

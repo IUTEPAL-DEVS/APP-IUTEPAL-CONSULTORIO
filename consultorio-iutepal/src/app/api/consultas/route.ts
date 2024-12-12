@@ -58,10 +58,9 @@ export async function PUT(req: NextRequest) {
     cookies: () => cookieStore,
   });
 
-  const id = req.nextUrl.searchParams.get('id');
-  const patientData = await req.json();
+  const { id, ...consultationData } = await req.json();
 
-  const { data, error } = await supabase.from('consultation').update(patientData).match({ id });
+  const { data, error } = await supabase.from('consultation').update(consultationData).eq('id', id);
 
   if (error) {
     console.log('Error en PUT:', error.message);
