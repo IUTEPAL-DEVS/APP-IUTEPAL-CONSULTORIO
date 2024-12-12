@@ -67,7 +67,7 @@ export function DataTablePatienConsult() {
 
   const table = useReactTable({
     data: data,
-    columns: columns({ handleRefresh, patient: patient || {} as Patients }),
+    columns: columns({ handleRefresh, patient: patient || ({} as Patients) }),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -101,7 +101,7 @@ export function DataTablePatienConsult() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
-                Columnas <ChevronDown className="ml-2 size-4" />
+                Filtrar <ChevronDown className="ml-2 size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

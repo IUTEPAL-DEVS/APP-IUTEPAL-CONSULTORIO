@@ -88,7 +88,7 @@ export function DataTablePatiens() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
-                Columnas <ChevronDown className="ml-2 size-4" />
+                Filtrar <ChevronDown className="ml-2 size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
